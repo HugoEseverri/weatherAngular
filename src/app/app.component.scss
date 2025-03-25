@@ -1,24 +1,131 @@
-body {
-    background-color: #f4f4f4;
-    font-family: Arial, sans-serif;
-}
+// body {
+//     background-color: #f4f4f4;
+//     font-family: Arial, sans-serif;
+// }
+
+// .container {
+//     max-width: 600px;
+//     margin: auto;
+//     margin-top: 145px;
+//     padding: 20px;
+//     text-align: center;
+//     background-color: #007bff85;
+//     border-radius: 10px;
+// }
+
+// button {
+//     background-color: #007bff;
+//     color: white;
+//     border: none;
+//     padding: 10px 15px;
+//     cursor: pointer;
+//     border-radius: 5px;
+// }
+
+// button:hover {
+//     background-color: #0056b3;
+// }
+
 
 .container {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
     text-align: center;
-}
-
-button {
-    background-color: #007bff;
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 20px;
+    background: #007bff71;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 5px;
 }
 
-button:hover {
-    background-color: #0056b3;
+.search-box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    button {
+        padding: 10px 15px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #0056b3;
+        }
+    }
+}
+
+.weather-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border-radius: 8px;
+    min-height: 200px;
+}
+
+.left-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+
+    h2 {
+        font-size: 22px;
+
+    }
+
+    .weather-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        p {
+            margin: 5px 0;
+            font-size: 16px;
+
+            color: white;
+        }
+
+        h3 {
+            font-size: 18px;
+        }
+    }
+
+    .location-name {
+        margin-top: 15px;
+        font-size: 20px;
+        font-weight: bold;
+        color: #ffffff;
+    }
+}
+
+.separator {
+    width: 2px;
+    background-color: #ffffff;
+    height: 100%;
+    margin: 0 20px;
+}
+
+.right-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .temperature {
+        font-size: 36px;
+        font-weight: bold;
+        color: #ffffff;
+    }
 }

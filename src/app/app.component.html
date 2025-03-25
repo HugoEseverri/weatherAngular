@@ -1,16 +1,25 @@
 <div class="container">
-  <h1>Weather App</h1>
+  <h1>App Clima</h1>
 
-  <div>
-    <input type="text" placeholder="Enter city" [(ngModel)]="city" />
-    <button (click)="getWeatherByCity()">Get Weather</button>
+  <div class="search-box">
+    <input type="text" placeholder="Escribir Ciudad" [(ngModel)]="city" />
+    <button (click)="getWeatherByCity()">Obtener Clima</button>
   </div>
 
-  <div *ngIf="weather">
-    <h2>{{ weather.name }}</h2>
-    <p>{{ weather.weather[0].description }}</p>
-    <p>Temperature: {{ weather.main.temp }}°C</p>
-    <p>Humidity: {{ weather.main.humidity }}%</p>
-    <p>Wind Speed: {{ weather.wind.speed }} m/s</p>
+  <div class="weather-container" *ngIf="weather">
+    <div class="left-section">
+      <div class="weather-info">
+        <h2>Detalles</h2>
+        <p>{{ weather.weather[0].description }}</p>
+        <p>Humedad: {{ weather.main.humidity }}%</p>
+        <p>Vel. Viento: {{ weather.wind.speed }} m/s</p>
+      </div>
+      <h2>Localidad:</h2>
+      <h3 class="location-name">{{ weather.name }}</h3>
+    </div>
+    <div class="separator"></div>
+    <div class="right-section">
+      <p class="temperature">{{ weather.main.temp }}°C</p>
+    </div>
   </div>
 </div>
