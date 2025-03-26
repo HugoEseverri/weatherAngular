@@ -8,6 +8,7 @@
 
   <div class="weather-container" *ngIf="weather">
     <div class="left-section">
+      <h2>Localidad: {{ weather.name }}</h2>
       <div class="weather-info">
         <h2>Detalles del Clima</h2>
         <p><strong>Descripción:</strong> {{ weather.weather[0].description }}</p>
@@ -17,11 +18,10 @@
         <p><strong>Presión Atmosférica:</strong> {{ weather.main.pressure }} hPa</p>
         <p><strong>Sensación Térmica:</strong> {{ weather.main.feels_like }}°C</p>
         <p><strong>Visibilidad:</strong> {{ weather.visibility / 1000 }} km</p>
+        <p><strong>Amanece:</strong> {{ convertUnixTime(weather.sys.sunrise) }}</p>
+        <p><strong>Oscurece:</strong> {{ convertUnixTime(weather.sys.sunset) }}</p>
       </div>
-      <h2>Localidad:</h2>
-      <h3 class="location-name">{{ weather.name }}</h3>
-      <p><strong>Amanece:</strong> {{ convertUnixTime(weather.sys.sunrise) }}</p>
-      <p><strong>Oscurece:</strong> {{ convertUnixTime(weather.sys.sunset) }}</p>
+      
     </div>
     <div class="separator"></div>
     <div class="right-section">
