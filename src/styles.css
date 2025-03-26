@@ -3,6 +3,10 @@ body {
     height: 100%;
 }
 
+html {
+    overflow-y: hidden;
+}
+
 body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -10,6 +14,5 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 100vh;
-
 }
+
