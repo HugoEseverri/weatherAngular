@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "allowedCommonJsDependencies": ["dotenv"],
             "outputPath": "dist/weather-app",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -39,7 +40,18 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "define": {
+                "API_KEY": "b6b082c9f2e8cceb7e7d464cb42e27b6"
+              },
               "budgets": [
+                
+                
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
@@ -56,7 +68,10 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "define": {
+                "API_KEY": "b6b082c9f2e8cceb7e7d464cb42e27b6"
+              }
             }
           },
           "defaultConfiguration": "production"

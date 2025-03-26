@@ -2,6 +2,7 @@
   "name": "weather-app",
   "version": "0.0.0",
   "scripts": {
+    "prestart": "node env-loader.js",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
@@ -23,6 +24,7 @@
     "@angular/router": "^19.2.0",
     "@angular/ssr": "^19.2.4",
     "axios": "^1.8.4",
+    "dotenv": "^16.4.7",
     "express": "^4.18.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
