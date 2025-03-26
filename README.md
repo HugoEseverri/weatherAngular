@@ -17,12 +17,12 @@ Weather App es una aplicación desarrollada en **Angular** que permite a los usu
 
 
 ## Contribución 🤝
-Si quieres mejorar la aplicación, ¡sos más que bienvenido! Seguí estos pasos:
-1. Haz un fork del repositorio
+Si querés mejorar la aplicación, ¡sos más que bienvenido! Seguí estos pasos:
+1. Hacé un fork del repositorio
 2. Crea una nueva rama (`git checkout -b feature-nueva-funcionalidad`)
 3. Realizá cambios y haz commit (`git commit -m 'Añadida nueva funcionalidad'`)
-4. Sube los cambios a tu fork (`git push origin feature-nueva-funcionalidad`)
-5. Abre un **Pull Request** en el repositorio original
+4. Subí los cambios a tu fork (`git push origin feature-nueva-funcionalidad`)
+5. Abrí un **Pull Request** en el repositorio original
 
 ## Licencia 📄
 Este proyecto está bajo la licencia **MIT**. Puedes usarlo y modificarlo libremente.
