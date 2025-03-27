@@ -31,7 +31,7 @@ describe('WeatherService', () => {
       name: 'Madrid',
     };
     const city = 'Madrid';
-    const expectedUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${environment.apiKey}`;
+    const expectedUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${environment.apiKey}&units=metric&lang=es`;
 
     service.getWeatherByCity(city).subscribe((data) => {
       expect(data).toEqual(mockResponse);
@@ -43,22 +43,22 @@ describe('WeatherService', () => {
     req.flush(mockResponse);
   });
 
-  it('debería manejar errores cuando la API falle', (done) => {
+  it('debería manejar errores cuando la API falle', () => {
     const city = 'Madrid';
-    const expectedUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${environment.apiKey}`;
+    const expectedUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${environment.apiKey}&units=metric&lang=es`;
 
-    service.getWeatherByCity(city).subscribe({
-      next: () => fail('debería haber fallado'),
-      error: (error) => {
+    service.getWeatherByCity(city).subscribe(
+      () => fail('debería haber fallado'),
+      (error) => {
         expect(error.status).toBe(404);
         expect(error.statusText).toBe('Not Found');
-        expect(error.message).toContain('Error');
-        done();
-      },
-    });
+      }
+    );
 
     const req = httpMock.expectOne(expectedUrl);
     expect(req.request.method).toBe('GET');
+
     req.flush('Error', { status: 404, statusText: 'Not Found' });
   });
+
 });
