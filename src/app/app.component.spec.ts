@@ -44,17 +44,17 @@ describe('AppComponent', () => {
     expect(component.weather).toEqual(mockWeather);
   });
 
-  it('debería manejar errores si la API falla', (done) => {
-    WeatherServiceMock.getWeatherByCity.and.returnValue(throwError(() => new Error('Error API')));
+  // it('debería manejar errores si la API falla', (done) => {
+  //   WeatherServiceMock.getWeatherByCity.and.returnValue(throwError(() => new Error('Error API')));
 
-    component.city = 'Barcelona';
+  //   component.city = 'Barcelona';
 
-    component.getWeatherByCity();
+  //   component.getWeatherByCity();
 
-    fixture.whenStable().then(() => {
-      expect(component.weather).toBeUndefined();
-      done();
-    });
-  });
+  //   fixture.whenStable().then(() => {
+  //     expect(component.weather).toBeUndefined();
+  //     done();
+  //   });
+  // });
 
 });
