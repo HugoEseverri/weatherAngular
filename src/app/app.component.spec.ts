@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
+import type { Mock } from 'vitest';
 import { AppComponent } from './app.component';
 import { mapForecast, WeatherService } from './core/services/weather.service';
 import { WeatherStore } from './core/services/weather-store.service';
@@ -8,13 +9,13 @@ import { FORECAST, PLACE } from './testing/fixtures';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
-  let weather: jasmine.SpyObj<WeatherService>;
+  let weather: { getReport: Mock<WeatherService['getReport']> };
   let store: WeatherStore;
 
   beforeEach(async () => {
     localStorage.clear();
-    weather = jasmine.createSpyObj<WeatherService>('WeatherService', ['getReport']);
-    weather.getReport.and.returnValue(of(mapForecast(PLACE, FORECAST, null)));
+    weather = { getReport: vi.fn() };
+    weather.getReport.mockReturnValue(of(mapForecast(PLACE, FORECAST, null)));
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],
@@ -58,7 +59,7 @@ describe('AppComponent', () => {
   });
 
   it('muestra un estado de error si la API falla', () => {
-    weather.getReport.and.returnValue(throwError(() => new Error('API caída')));
+    weather.getReport.mockReturnValue(throwError(() => new Error('API caída')));
     store.load(PLACE);
     fixture.detectChanges();
     fixture.detectChanges();

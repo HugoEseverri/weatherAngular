@@ -13,7 +13,7 @@ const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine({
-  // TODO: This is a security-sensitive option. Remove if not needed. For more information, see https://angular.dev/best-practices/security#configuring-trusted-proxy-headers
+  // Vercel actúa como proxy: confiamos en estos encabezados para conocer el host y el protocolo reales.
   trustProxyHeaders: ['x-forwarded-host', 'x-forwarded-proto'],
 });
 

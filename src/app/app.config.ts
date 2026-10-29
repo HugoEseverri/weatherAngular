@@ -1,4 +1,4 @@
-import { ApplicationConfig, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, provideZonelessChangeDetection } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
 import { provideRouter } from '@angular/router';
@@ -11,7 +11,7 @@ registerLocaleData(localeEsAr);
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideHttpClient(withFetch()),
     provideRouter(routes),
     provideClientHydration(withEventReplay(), withNoIncrementalHydration()),

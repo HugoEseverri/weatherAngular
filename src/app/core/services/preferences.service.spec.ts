@@ -18,7 +18,7 @@ describe('PreferencesService', () => {
 
   it('agrega y quita favoritos', () => {
     prefs.toggleFavorite(city('1'));
-    expect(prefs.isFavorite(city('1'))).toBeTrue();
+    expect(prefs.isFavorite(city('1'))).toBe(true);
 
     prefs.toggleFavorite(city('1'));
     expect(prefs.favorites()).toEqual([]);

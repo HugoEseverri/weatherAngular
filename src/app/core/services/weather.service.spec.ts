@@ -38,7 +38,7 @@ describe('WeatherService', () => {
     expect(report).toBeDefined();
     expect(report!.place).toEqual(PLACE);
     expect(report!.current.temperature).toBe(13.4);
-    expect(report!.current.isDay).toBeTrue();
+    expect(report!.current.isDay).toBe(true);
     expect(report!.hourly.length).toBe(2);
     expect(report!.daily[0].max).toBe(22);
     expect(report!.airQuality?.aqi).toBe(16);
@@ -74,7 +74,7 @@ describe('WeatherService', () => {
       .flush('error', { status: 500, statusText: 'Server Error' });
     http.match((r) => r.url.startsWith('https://air-quality-api'));
 
-    expect(failed).toBeTrue();
+    expect(failed).toBe(true);
   });
 });
 
