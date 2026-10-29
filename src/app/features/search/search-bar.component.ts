@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, debounceTime, distinctUntilChanged, map, of, startWith, switchMap } from 'rxjs';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { Place } from '../../core/models/weather.models';
 import { GeocodingService } from '../../core/services/geocoding.service';
 import { PreferencesService } from '../../core/services/preferences.service';
@@ -42,6 +43,7 @@ export class SearchBarComponent {
   private readonly geocoding = inject(GeocodingService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly prefs = inject(PreferencesService);
+  protected readonly i18n = inject(I18nService);
 
   readonly locating = input(false);
   readonly selected = output<Place>();
@@ -54,14 +56,13 @@ export class SearchBarComponent {
   protected readonly activeIndex = signal(-1);
 
   private readonly search = toSignal(
-    toObservable(this.query).pipe(
-      map((q) => q.trim()),
+    toObservable(computed(() => ({ q: this.query().trim(), lang: this.i18n.lang() }))).pipe(
       debounceTime(220),
-      distinctUntilChanged(),
-      switchMap((q) =>
+      distinctUntilChanged((a, b) => a.q === b.q && a.lang === b.lang),
+      switchMap(({ q, lang }) =>
         q.length < 2
           ? of<SearchState>({ loading: false, results: [] })
-          : this.geocoding.search(q).pipe(
+          : this.geocoding.search(q, lang).pipe(
               map((results): SearchState => ({ loading: false, results })),
               catchError(() => of<SearchState>({ loading: false, results: [] })),
               startWith<SearchState>({ loading: true, results: [] }),

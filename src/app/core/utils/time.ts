@@ -12,35 +12,39 @@ export function parseLocal(iso: string, utcOffsetSeconds: number): Date {
 
 const formatters = new Map<string, Intl.DateTimeFormat>();
 
-function formatter(timeZone: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
-  const key = timeZone + JSON.stringify(options);
+function formatter(locale: string, timeZone: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  const key = locale + timeZone + JSON.stringify(options);
   let f = formatters.get(key);
   if (!f) {
-    f = new Intl.DateTimeFormat('es-AR', { timeZone, ...options });
+    f = new Intl.DateTimeFormat(locale, { timeZone, ...options });
     formatters.set(key, f);
   }
   return f;
 }
 
-export function formatTime(date: Date, timeZone: string): string {
-  return formatter(timeZone, { hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
+/** En español usamos reloj de 24 h; en inglés, el formato habitual de 12 h. */
+function clock(locale: string): Intl.DateTimeFormatOptions {
+  return locale.startsWith('es') ? { hourCycle: 'h23' } : { hour12: true };
 }
 
-export function formatHour(date: Date, timeZone: string): string {
-  return formatter(timeZone, { hour: '2-digit', hour12: false }).format(date) + ' h';
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+export function formatTime(date: Date, timeZone: string, locale = 'es-AR'): string {
+  const hour = locale.startsWith('es') ? '2-digit' : 'numeric';
+  return formatter(locale, timeZone, { hour, minute: '2-digit', ...clock(locale) }).format(date);
 }
 
-export function formatWeekday(date: Date, timeZone: string): string {
-  const s = formatter(timeZone, { weekday: 'short' }).format(date).replace('.', '');
-  return s.charAt(0).toUpperCase() + s.slice(1);
+export function formatHour(date: Date, timeZone: string, locale = 'es-AR'): string {
+  if (locale.startsWith('es')) {
+    return formatter(locale, timeZone, { hour: '2-digit', hourCycle: 'h23' }).format(date) + ' h';
+  }
+  return formatter(locale, timeZone, { hour: 'numeric', hour12: true }).format(date);
 }
 
-export function formatLongDate(date: Date, timeZone: string): string {
-  const s = formatter(timeZone, { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
-  return s.charAt(0).toUpperCase() + s.slice(1);
+export function formatWeekday(date: Date, timeZone: string, locale = 'es-AR'): string {
+  return capitalize(formatter(locale, timeZone, { weekday: 'short' }).format(date).replace('.', ''));
 }
 
-export function isSameLocalDay(a: Date, b: Date, timeZone: string): boolean {
-  const f = formatter(timeZone, { year: 'numeric', month: '2-digit', day: '2-digit' });
-  return f.format(a) === f.format(b);
+export function formatLongDate(date: Date, timeZone: string, locale = 'es-AR'): string {
+  return capitalize(formatter(locale, timeZone, { weekday: 'long', day: 'numeric', month: 'long' }).format(date));
 }

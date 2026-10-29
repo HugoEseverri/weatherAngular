@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
-import { Place } from '../models/weather.models';
+import { Language, Place } from '../models/weather.models';
 
-const SEARCH_URL = 'https://geocoding-api.open-meteo.com/v1/search';
+const BASE_URL = 'https://geocoding-api.open-meteo.com/v1';
 const REVERSE_URL = 'https://api.bigdatacloud.net/data/reverse-geocode-client';
 
 interface GeocodingResult {
@@ -24,45 +24,49 @@ interface ReverseResult {
   countryCode?: string;
 }
 
+function toPlace(g: GeocodingResult): Place {
+  return {
+    id: String(g.id),
+    name: g.name,
+    region: g.admin1,
+    country: g.country,
+    countryCode: g.country_code,
+    latitude: g.latitude,
+    longitude: g.longitude,
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class GeocodingService {
   private readonly http = inject(HttpClient);
 
-  search(query: string, count = 6): Observable<Place[]> {
+  search(query: string, lang: Language = 'es', count = 6): Observable<Place[]> {
     const name = query.trim();
     if (name.length < 2) return of([]);
 
     return this.http
-      .get<{ results?: GeocodingResult[] }>(SEARCH_URL, {
-        params: new HttpParams({ fromObject: { name, count, language: 'es', format: 'json' } }),
+      .get<{ results?: GeocodingResult[] }>(`${BASE_URL}/search`, {
+        params: new HttpParams({ fromObject: { name, count, language: lang, format: 'json' } }),
       })
-      .pipe(
-        map((r) =>
-          (r.results ?? []).map((g) => ({
-            id: String(g.id),
-            name: g.name,
-            region: g.admin1,
-            country: g.country,
-            countryCode: g.country_code,
-            latitude: g.latitude,
-            longitude: g.longitude,
-          })),
-        ),
-      );
+      .pipe(map((r) => (r.results ?? []).map(toPlace)));
   }
 
-  /** Nombre legible para unas coordenadas; si el servicio falla se usa un nombre genérico. */
-  reverse(latitude: number, longitude: number): Observable<Place> {
-    const fallback: Place = {
-      id: `geo:${latitude.toFixed(3)},${longitude.toFixed(3)}`,
-      name: 'Mi ubicación',
-      latitude,
-      longitude,
-    };
+  /** Ciudad a partir de su id de GeoNames (el que viaja en la URL). */
+  getById(id: string, lang: Language = 'es'): Observable<Place> {
+    return this.http
+      .get<GeocodingResult>(`${BASE_URL}/get`, {
+        params: new HttpParams({ fromObject: { id, language: lang } }),
+      })
+      .pipe(map(toPlace));
+  }
+
+  /** Nombre legible para unas coordenadas; si el servicio falla se usa `fallbackName`. */
+  reverse(latitude: number, longitude: number, lang: Language = 'es', fallbackName = ''): Observable<Place> {
+    const fallback: Place = { id: coordsId(latitude, longitude), name: fallbackName, latitude, longitude };
 
     return this.http
       .get<ReverseResult>(REVERSE_URL, {
-        params: new HttpParams({ fromObject: { latitude, longitude, localityLanguage: 'es' } }),
+        params: new HttpParams({ fromObject: { latitude, longitude, localityLanguage: lang } }),
       })
       .pipe(
         map((r) => ({
@@ -75,4 +79,8 @@ export class GeocodingService {
         catchError(() => of(fallback)),
       );
   }
+}
+
+export function coordsId(latitude: number, longitude: number): string {
+  return `geo:${latitude.toFixed(3)},${longitude.toFixed(3)}`;
 }

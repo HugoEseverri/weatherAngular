@@ -46,7 +46,16 @@ export class UnitsService {
   }
 
   precipitation(mm: number): string {
-    return this.imperial ? `${(mm / 25.4).toFixed(2)} in` : `${mm.toFixed(1)} mm`;
+    return `${this.precipitationValue(mm)} ${this.precipitationUnit()}`;
+  }
+
+  /** Valor numérico sin unidad (para etiquetas compactas en gráficos). */
+  precipitationValue(mm: number): string {
+    return this.imperial ? (mm / 25.4).toFixed(2) : mm.toFixed(1);
+  }
+
+  precipitationUnit(): string {
+    return this.imperial ? 'in' : 'mm';
   }
 
   pressure(hpa: number): { value: string; unit: string } {

@@ -1,0 +1,43 @@
+<section class="glass radar-card rise" aria-labelledby="radar-title">
+  <header class="radar-head">
+    <h2 id="radar-title" class="card-title"><app-icon name="map" /> {{ i18n.t('radar.title') }}</h2>
+    <div class="radar-legend" aria-hidden="true">
+      <span>{{ i18n.t('radar.light') }}</span>
+      <i></i>
+      <span>{{ i18n.t('radar.heavy') }}</span>
+    </div>
+  </header>
+
+  <div class="radar-frame">
+    <div #map class="radar-map"></div>
+    @if (failed()) {
+      <p class="radar-overlay">{{ i18n.t('radar.error') }}</p>
+    } @else if (!ready()) {
+      <div class="radar-overlay skeleton"></div>
+    }
+  </div>
+
+  @if (ready()) {
+    <div class="radar-controls">
+      <button
+        type="button"
+        class="icon-btn"
+        [attr.aria-label]="i18n.t(playing() ? 'radar.pause' : 'radar.play')"
+        [title]="i18n.t(playing() ? 'radar.pause' : 'radar.play')"
+        (click)="togglePlay()"
+      >
+        <app-icon [name]="playing() ? 'pause' : 'play'" [filled]="true" [size]="16" />
+      </button>
+      <input
+        type="range"
+        min="0"
+        [max]="frames().length - 1"
+        [value]="index()"
+        [attr.aria-label]="i18n.t('radar.timeline')"
+        [attr.aria-valuetext]="frameLabel()"
+        (input)="seek($any($event.target).value)"
+      />
+      <span class="radar-time">{{ frameLabel() }}</span>
+    </div>
+  }
+</section>

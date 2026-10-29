@@ -1,18 +1,19 @@
 import { computed, effect, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Place, Units } from '../models/weather.models';
+import { Language, Place, Units } from '../models/weather.models';
 
 const STORAGE_KEY = 'clima:prefs:v1';
 const MAX_RECENTS = 6;
 
 interface StoredPrefs {
   units: Units;
+  lang: Language;
   favorites: Place[];
   recents: Place[];
   lastPlace: Place | null;
 }
 
-const DEFAULTS: StoredPrefs = { units: 'metric', favorites: [], recents: [], lastPlace: null };
+const DEFAULTS: StoredPrefs = { units: 'metric', lang: 'es', favorites: [], recents: [], lastPlace: null };
 
 /** Preferencias del usuario persistidas en localStorage (solo en el navegador). */
 @Injectable({ providedIn: 'root' })
@@ -21,6 +22,7 @@ export class PreferencesService {
   private readonly state = signal<StoredPrefs>(this.load());
 
   readonly units = computed(() => this.state().units);
+  readonly lang = computed(() => this.state().lang);
   readonly favorites = computed(() => this.state().favorites);
   readonly recents = computed(() => this.state().recents);
   readonly lastPlace = computed(() => this.state().lastPlace);
@@ -39,6 +41,10 @@ export class PreferencesService {
 
   setUnits(units: Units): void {
     this.state.update((s) => ({ ...s, units }));
+  }
+
+  setLang(lang: Language): void {
+    this.state.update((s) => ({ ...s, lang }));
   }
 
   isFavorite(place: Place): boolean {
@@ -63,17 +69,18 @@ export class PreferencesService {
     }));
   }
 
-  clearRecents(): void {
-    this.state.update((s) => ({ ...s, recents: [] }));
-  }
-
   private load(): StoredPrefs {
     if (!this.isBrowser) return DEFAULTS;
+    // En la primera visita, el idioma se toma del navegador.
+    const detected: StoredPrefs = {
+      ...DEFAULTS,
+      lang: navigator.language?.toLowerCase().startsWith('es') === false ? 'en' : 'es',
+    };
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? { ...DEFAULTS, ...JSON.parse(raw) } : DEFAULTS;
+      return raw ? { ...detected, ...JSON.parse(raw) } : detected;
     } catch {
-      return DEFAULTS;
+      return detected;
     }
   }
 }

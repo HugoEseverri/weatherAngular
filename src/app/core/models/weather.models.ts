@@ -1,4 +1,5 @@
 export type Units = 'metric' | 'imperial';
+export type Language = 'es' | 'en';
 
 export type ConditionKind =
   | 'clear'
@@ -44,6 +45,9 @@ export interface HourlyPoint {
   code: number;
   isDay: boolean;
   precipitationProbability: number;
+  precipitation: number; // mm
+  windSpeed: number; // km/h
+  windDirection: number;
 }
 
 export interface DailyPoint {
@@ -76,4 +80,14 @@ export interface WeatherReport {
   daily: DailyPoint[];
   airQuality: AirQuality | null;
   fetchedAt: Date;
+}
+
+export interface PlaceSummary {
+  place: Place;
+  temperature: number;
+  code: number;
+  isDay: boolean;
+  max: number;
+  min: number;
+  timezone: string;
 }

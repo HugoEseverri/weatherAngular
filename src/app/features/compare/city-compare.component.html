@@ -1,0 +1,41 @@
+<section class="compare rise" aria-labelledby="compare-title">
+  <h2 id="compare-title" class="card-title"><app-icon name="grid" /> {{ i18n.t('compare.title') }}</h2>
+
+  @if (hasFavorites()) {
+    <ul class="cards">
+      @for (c of cards(); track c.place.id) {
+        <li>
+          <a
+            class="city glass"
+            [class.active]="c.active"
+            [routerLink]="['/clima', c.slug]"
+            [state]="{ place: c.place }"
+            [attr.aria-current]="c.active ? 'page' : null"
+            [attr.aria-label]="i18n.t('compare.open', { city: c.place.name })"
+          >
+            <span class="top">
+              <app-flag [countryCode]="c.place.countryCode" [width]="20" />
+              <strong>{{ c.place.name }}</strong>
+            </span>
+            <span class="time">{{ c.localTime }}{{ c.active ? ' · ' + i18n.t('compare.current') : '' }}</span>
+            <span class="reading">
+              <span class="temp">{{ units.temp(c.temperature) }}</span>
+              <app-weather-icon [code]="c.code" [isDay]="c.isDay" [size]="44" [animated]="false" />
+            </span>
+            <span class="cond">{{ c.condition }}</span>
+            <span class="range">↑ {{ units.temp(c.max) }} · ↓ {{ units.temp(c.min) }}</span>
+          </a>
+        </li>
+      } @empty {
+        @for (p of [1, 2, 3]; track p) {
+          <li><span class="city glass placeholder skeleton"></span></li>
+        }
+      }
+    </ul>
+  } @else {
+    <p class="empty glass">
+      <app-icon name="star" />
+      {{ i18n.t('compare.empty') }}
+    </p>
+  }
+</section>

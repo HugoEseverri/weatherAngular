@@ -166,3 +166,20 @@ h1 {
     margin-top: 12px;
   }
 }
+
+.actions {
+  position: relative;
+}
+
+.copied {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--surface-solid);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  animation: rise 0.25s var(--ease-out);
+}

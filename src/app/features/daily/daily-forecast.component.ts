@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { WeatherReport } from '../../core/models/weather.models';
 import { UnitsService } from '../../core/services/units.service';
 import { formatTime, formatWeekday } from '../../core/utils/time';
@@ -44,6 +45,7 @@ function mix(a: string, b: string, k: number): string {
 })
 export class DailyForecastComponent {
   protected readonly units = inject(UnitsService);
+  protected readonly i18n = inject(I18nService);
   readonly report = input.required<WeatherReport>();
 
   protected readonly expanded = signal<number | null>(null);
@@ -56,16 +58,16 @@ export class DailyForecastComponent {
 
     return r.daily.map((d, i) => ({
       ...d,
-      label: i === 0 ? 'Hoy' : formatWeekday(d.date, r.timezone),
-      condition: describeCode(d.code).label,
+      label: i === 0 ? this.i18n.t('daily.today') : formatWeekday(d.date, r.timezone, this.i18n.locale()),
+      condition: this.i18n.t(describeCode(d.code).key),
       left: ((d.min - lo) / span) * 100,
       width: Math.max(((d.max - d.min) / span) * 100, 4),
       gradient: `linear-gradient(90deg, ${tempColor(d.min)}, ${tempColor(d.max)})`,
       // Posición de la temperatura actual dentro de la barra de hoy
       nowPos: i === 0 ? clamp(((r.current.temperature - d.min) / (d.max - d.min || 1)) * 100, 0, 100) : null,
-      sunrise: formatTime(d.sunrise, r.timezone),
-      sunset: formatTime(d.sunset, r.timezone),
-      uv: uvLevel(d.uvIndexMax),
+      sunrise: formatTime(d.sunrise, r.timezone, this.i18n.locale()),
+      sunset: formatTime(d.sunset, r.timezone, this.i18n.locale()),
+      uvLabel: this.i18n.t(uvLevel(d.uvIndexMax).key),
       uvRounded: Math.round(d.uvIndexMax),
     }));
   });

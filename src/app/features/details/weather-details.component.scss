@@ -2,10 +2,16 @@
   display: block;
 }
 
+// Columnas fijas por breakpoint + "dense" para que las tarjetas anchas no dejen huecos
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-flow: dense;
   gap: 16px;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .tile {
@@ -50,8 +56,8 @@
 .tag {
   padding: 4px 10px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--tone, #fff) 22%, transparent);
-  color: var(--tone, #fff);
+  background: var(--tone, #fff);
+  color: #0f172a;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -349,23 +355,62 @@
   }
 }
 
-@media (max-width: 460px) {
+@media (max-width: 640px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
   .tile {
     padding: 16px;
     min-height: 170px;
   }
-  .aqi {
-    flex-direction: column;
-  }
-  .wind {
-    flex-direction: column;
-    align-items: flex-start;
+  // Con dos columnas la última tarjeta simple quedaría sola: ocupa la fila completa
+  .tile:last-child {
+    grid-column: span 2;
   }
   .compass {
     width: 96px;
+  }
+}
+
+// ---- Luna ----
+.moon {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  svg {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    filter: drop-shadow(0 0 14px rgba(243, 236, 210, 0.35));
+
+    &.mirrored {
+      transform: scaleX(-1);
+    }
+  }
+  .moon-dark {
+    fill: rgba(15, 23, 42, 0.55);
+    stroke: rgba(255, 255, 255, 0.15);
+  }
+  .moon-lit {
+    fill: #f3ecd2;
+  }
+}
+
+.moon-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.moon-sub {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+
+  strong {
+    color: var(--text);
   }
 }

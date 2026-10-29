@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
-import { AirQuality, DailyPoint, HourlyPoint, Place, WeatherReport } from '../models/weather.models';
+import { AirQuality, DailyPoint, HourlyPoint, Place, PlaceSummary, WeatherReport } from '../models/weather.models';
 import { parseLocal } from '../utils/time';
 
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
@@ -23,7 +23,15 @@ const CURRENT_VARS = [
   'visibility',
   'uv_index',
 ];
-const HOURLY_VARS = ['temperature_2m', 'weather_code', 'precipitation_probability', 'is_day'];
+const HOURLY_VARS = [
+  'temperature_2m',
+  'weather_code',
+  'precipitation_probability',
+  'precipitation',
+  'is_day',
+  'wind_speed_10m',
+  'wind_direction_10m',
+];
 const DAILY_VARS = [
   'weather_code',
   'temperature_2m_max',
@@ -90,6 +98,46 @@ export class WeatherService {
       map(([forecast, airQuality]) => mapForecast(place, forecast, airQuality)),
     );
   }
+
+  /** Resumen liviano de varias ciudades en una sola petición (Open-Meteo acepta listas de coordenadas). */
+  getSummaries(places: Place[]): Observable<PlaceSummary[]> {
+    if (!places.length) return of([]);
+
+    return this.http
+      .get<SummaryResponse | SummaryResponse[]>(FORECAST_URL, {
+        params: new HttpParams({
+          fromObject: {
+            latitude: places.map((p) => p.latitude).join(','),
+            longitude: places.map((p) => p.longitude).join(','),
+            current: 'temperature_2m,weather_code,is_day',
+            daily: 'temperature_2m_max,temperature_2m_min',
+            forecast_days: 1,
+            timezone: 'auto',
+          },
+        }),
+      })
+      .pipe(
+        // Con una sola ubicación la API devuelve un objeto en lugar de un arreglo.
+        map((r) => (Array.isArray(r) ? r : [r])),
+        map((list) =>
+          list.map((r, i) => ({
+            place: places[i],
+            temperature: Number(r.current['temperature_2m']),
+            code: Number(r.current['weather_code']),
+            isDay: Number(r.current['is_day']) === 1,
+            max: Number(r.daily['temperature_2m_max'][0]),
+            min: Number(r.daily['temperature_2m_min'][0]),
+            timezone: r.timezone,
+          })),
+        ),
+      );
+  }
+}
+
+interface SummaryResponse {
+  timezone: string;
+  current: Record<string, number | string>;
+  daily: Record<string, number[]>;
 }
 
 function mapAirQuality(r: AirQualityResponse): AirQuality | null {
@@ -115,6 +163,9 @@ export function mapForecast(place: Place, r: ForecastResponse, airQuality: AirQu
     code: num(r.hourly['weather_code'][i]),
     isDay: num(r.hourly['is_day'][i]) === 1,
     precipitationProbability: num(r.hourly['precipitation_probability'][i]),
+    precipitation: num(r.hourly['precipitation']?.[i]),
+    windSpeed: num(r.hourly['wind_speed_10m']?.[i]),
+    windDirection: num(r.hourly['wind_direction_10m']?.[i]),
   }));
 
   const daily: DailyPoint[] = (r.daily['time'] as string[]).map((t, i) => ({

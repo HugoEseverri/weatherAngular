@@ -37,7 +37,7 @@ describe('PreferencesService', () => {
 
   it('persiste las preferencias en localStorage', () => {
     prefs.setUnits('imperial');
-    TestBed.flushEffects();
+    TestBed.tick();
     expect(JSON.parse(localStorage.getItem('clima:prefs:v1')!).units).toBe('imperial');
   });
 });

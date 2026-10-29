@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { describeCode } from '../../core/utils/weather-codes';
 
 /** Ícono meteorológico vectorial y animado, armado a partir del código WMO. */
@@ -104,7 +105,8 @@ export class WeatherIconComponent {
 
   protected readonly rays = [0, 45, 90, 135, 180, 225, 270, 315];
   protected readonly kind = computed(() => describeCode(this.code()).kind);
-  protected readonly label = computed(() => describeCode(this.code()).label);
+  private readonly i18n = inject(I18nService);
+  protected readonly label = computed(() => this.i18n.t(describeCode(this.code()).key));
 
   protected readonly cloudTransform = computed(() => {
     switch (this.kind()) {

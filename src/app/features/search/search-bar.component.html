@@ -6,9 +6,10 @@
     role="combobox"
     autocomplete="off"
     spellcheck="false"
-    placeholder="Buscar ciudad…"
-    aria-label="Buscar ciudad"
+    [placeholder]="i18n.t('search.placeholder')"
+    [attr.aria-label]="i18n.t('search.label')"
     aria-controls="search-options"
+    aria-autocomplete="list"
     [attr.aria-expanded]="showPanel()"
     [attr.aria-activedescendant]="activeIndex() >= 0 ? 'opt-' + activeIndex() : null"
     [value]="query()"
@@ -17,13 +18,13 @@
     (keydown)="onKeydown($event)"
   />
   @if (loading()) {
-    <span class="spinner" aria-label="Buscando"></span>
+    <span class="spinner" role="status" [attr.aria-label]="i18n.t('search.loading')"></span>
   } @else if (query()) {
-    <button type="button" class="ghost" aria-label="Limpiar búsqueda" (click)="clear()">
+    <button type="button" class="ghost" [attr.aria-label]="i18n.t('search.clear')" (click)="clear()">
       <app-icon name="close" [size]="18" />
     </button>
   } @else {
-    <kbd>/</kbd>
+    <kbd aria-hidden="true">/</kbd>
   }
   <span class="divider"></span>
   <button
@@ -32,21 +33,21 @@
     [class.busy]="locating()"
     [disabled]="locating()"
     (click)="locate.emit()"
-    aria-label="Usar mi ubicación"
-    title="Usar mi ubicación"
+    [attr.aria-label]="i18n.t('search.locate')"
+    [title]="i18n.t('search.locate')"
   >
     <app-icon name="locate" [size]="19" />
-    <span class="label">Mi ubicación</span>
+    <span class="label">{{ i18n.t('search.locateShort') }}</span>
   </button>
 </div>
 
 @if (showPanel()) {
-  <ul id="search-options" class="panel" role="listbox" aria-label="Ciudades">
+  <ul id="search-options" class="panel" role="listbox" [attr.aria-label]="i18n.t('search.cities')">
     @for (opt of options(); track opt.place.id + opt.group; let i = $index) {
       @if (opt.group !== 'result' && (i === 0 || options()[i - 1].group !== opt.group)) {
         <li class="group" role="presentation">
           <app-icon [name]="opt.group === 'favorite' ? 'star' : 'history'" [size]="13" />
-          {{ opt.group === 'favorite' ? 'Favoritos' : 'Recientes' }}
+          {{ i18n.t(opt.group === 'favorite' ? 'search.favorites' : 'search.recents') }}
         </li>
       }
       <li
@@ -66,7 +67,7 @@
           }
         </span>
         <span class="text">
-          <strong>{{ opt.place.name }}</strong>
+          <strong>{{ opt.place.name || i18n.t('place.myLocation') }}</strong>
           @if (subtitle(opt.place)) {
             <small>{{ subtitle(opt.place) }}</small>
           }
@@ -84,7 +85,7 @@
           </li>
         }
       } @else {
-        <li class="empty" role="presentation">Sin resultados para “{{ query().trim() }}”.</li>
+        <li class="empty" role="presentation">{{ i18n.t('search.empty', { q: query().trim() }) }}</li>
       }
     }
   </ul>
