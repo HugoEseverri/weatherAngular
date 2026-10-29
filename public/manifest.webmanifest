@@ -19,6 +19,6 @@
   ],
   "screenshots": [
     { "src": "screenshots/desktop.png", "sizes": "1440x900", "type": "image/png", "form_factor": "wide", "label": "Pronóstico en escritorio" },
-    { "src": "screenshots/mobile.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow", "label": "Pronóstico en el celular" }
+    { "src": "screenshots/mobile.png", "sizes": "1170x1992", "type": "image/png", "form_factor": "narrow", "label": "Pronóstico en el celular" }
   ]
 }

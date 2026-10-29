@@ -79,6 +79,8 @@
   display: flex;
   padding: 4px;
   border-radius: 16px;
+  // Fondo más oscuro que el resto del vidrio: mantiene el contraste sobre cielos claros
+  background: rgba(15, 23, 42, 0.32);
 
   button {
     min-width: 42px;
@@ -89,7 +91,7 @@
     background: transparent;
     font-weight: 700;
     font-size: 0.85rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.85);
     transition:
       background 0.2s ease,
       color 0.2s ease;

@@ -156,13 +156,12 @@ h1 {
     padding: 22px 20px 18px;
   }
   .art {
-    width: 120px !important;
-    height: 120px !important;
-    position: absolute;
-    right: 14px;
-    top: 120px;
+    width: 104px !important;
+    height: 104px !important;
+    margin: 18px -4px 0 0;
   }
   .main {
+    align-items: flex-start;
     margin-top: 12px;
   }
 }

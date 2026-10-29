@@ -14,8 +14,21 @@
         <div class="glass radar-placeholder"></div>
       }
     </div>
-    <app-weather-details class="details" [report]="r" />
-    <app-city-compare class="compare" [current]="r.place" />
+    <!-- Se renderizan en el servidor, pero su JS se descarga e hidrata al llegar a la pantalla -->
+    <div class="details">
+      @defer (on viewport; hydrate on viewport) {
+        <app-weather-details [report]="r" />
+      } @placeholder {
+        <div class="glass details-placeholder"></div>
+      }
+    </div>
+    <div class="compare">
+      @defer (on viewport; hydrate on viewport) {
+        <app-city-compare [current]="r.place" />
+      } @placeholder {
+        <div class="compare-placeholder"></div>
+      }
+    </div>
   </div>
 } @else if (fatalError()) {
   <section class="error glass" role="alert">

@@ -63,6 +63,16 @@
               "aot": false,
               "optimization": false,
               "extractLicenses": false
+            },
+            "e2e": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "ssr": false,
+              "prerender": false,
+              "serviceWorker": false,
+              "server": false,
+              "outputMode": "static"
             }
           },
           "defaultConfiguration": "production"
@@ -75,6 +85,9 @@
             },
             "development": {
               "buildTarget": "weather-app:build:development"
+            },
+            "e2e": {
+              "buildTarget": "weather-app:build:e2e"
             }
           },
           "defaultConfiguration": "development"
