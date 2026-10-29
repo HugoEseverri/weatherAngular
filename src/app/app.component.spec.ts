@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { AppComponent } from './app.component';
 import { mapForecast, WeatherService } from './core/services/weather.service';
@@ -18,7 +18,7 @@ describe('AppComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [provideHttpClient(), { provide: WeatherService, useValue: weather }],
+      providers: [provideHttpClient(withXhr()), { provide: WeatherService, useValue: weather }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
