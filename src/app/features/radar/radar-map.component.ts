@@ -23,6 +23,8 @@ const RAINVIEWER_URL = 'https://api.rainviewer.com/public/weather-maps.json';
 const ESRI_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas';
 const FRAME_MS = 700;
 const LAST_FRAME_PAUSE_MS = 1600;
+// RainViewer limita las peticiones de teselas por IP: usamos un cuadro de cada dos (cada 20 min)
+const FRAME_STEP = 2;
 
 interface RadarFrame {
   time: number;
@@ -89,19 +91,37 @@ export class RadarMapComponent {
       this.marker?.setLatLng(center);
     });
 
-    // Mostrar solo la capa del cuadro actual
+    // Mostrar la capa del cuadro actual y precargar la siguiente; el resto se quita del mapa
+    // porque Leaflet pide teselas de toda capa añadida aunque sea invisible
     effect(() => {
+      if (!this.ready()) return;
       const i = this.index();
-      this.layers.forEach((layer, j) => layer.setOpacity(i === j ? 0.75 : 0));
+      const next = this.nextIndex(i);
+      this.layers.forEach((layer, j) => {
+        if (j === i || j === next) {
+          layer.setOpacity(j === i ? 0.75 : 0);
+          if (this.map && !this.map.hasLayer(layer)) layer.addTo(this.map);
+        } else {
+          layer.remove();
+        }
+      });
     });
 
-    // Animación: avanza cuadros mientras esté en reproducción
+    // Animación: avanza cuadros mientras esté en reproducción, esperando a que el siguiente haya cargado
     effect((onCleanup) => {
       if (!this.playing() || !this.ready()) return;
-      const last = this.frames().length - 1;
-      const delay = this.index() === last ? LAST_FRAME_PAUSE_MS : FRAME_MS;
-      this.timer = setTimeout(() => this.index.update((i) => (i >= last ? 0 : i + 1)), delay);
-      onCleanup(() => clearTimeout(this.timer));
+      const next = this.nextIndex(this.index());
+      const delay = next === 0 ? LAST_FRAME_PAUSE_MS : FRAME_MS;
+      let cancelled = false;
+      this.timer = setTimeout(() => {
+        this.whenLoaded(this.layers[next]).then(() => {
+          if (!cancelled) this.index.set(next);
+        });
+      }, delay);
+      onCleanup(() => {
+        cancelled = true;
+        clearTimeout(this.timer);
+      });
     });
 
     destroyRef.onDestroy(() => {
@@ -117,6 +137,16 @@ export class RadarMapComponent {
   protected seek(value: string): void {
     this.playing.set(false);
     this.index.set(Number(value));
+  }
+
+  private nextIndex(i: number): number {
+    return i >= this.frames().length - 1 ? 0 : i + 1;
+  }
+
+  /** Resuelve cuando la capa no tiene teselas pendientes (las fallidas también cuentan como terminadas). */
+  private whenLoaded(layer: Leaflet.TileLayer | undefined): Promise<void> {
+    if (!layer || !this.map?.hasLayer(layer) || !layer.isLoading()) return Promise.resolve();
+    return new Promise((resolve) => layer.once('load', () => resolve()));
   }
 
   private async init(): Promise<void> {
@@ -145,14 +175,19 @@ export class RadarMapComponent {
         attribution: 'Esri, HERE, Garmin, &copy; OpenStreetMap · RainViewer',
       }).addTo(map);
 
-      const frames = data.radar.past;
+      // Cuadros espaciados FRAME_STEP, conservando siempre el más reciente
+      const past = data.radar.past;
+      const frames = past.filter((_, i) => (past.length - 1 - i) % FRAME_STEP === 0);
+      // Las capas no se añaden aquí: el efecto del cuadro actual las añade y quita según se necesitan
       this.layers = frames.map((f) =>
         L.tileLayer(`${data.host}${f.path}/256/{z}/{x}/{y}/2/1_1.png`, {
           opacity: 0,
           maxNativeZoom: 7,
           maxZoom: 10,
           zIndex: 10,
-        }).addTo(map),
+          keepBuffer: 0,
+          updateWhenIdle: true,
+        }),
       );
 
       // Etiquetas de ciudades por encima del radar para no perder la referencia
