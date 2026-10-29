@@ -1,32 +1,90 @@
-<div class="container">
-  <h1>App Clima</h1>
+<a class="skip-link" href="#content">{{ i18n.t('app.skip') }}</a>
 
-  <div class="search-box">
-    <input type="text" placeholder="Escribir Ciudad" [(ngModel)]="city" />
-    <button (click)="getWeatherByCity()">Obtener Clima</button>
-  </div>
+<app-sky-backdrop [theme]="store.theme()" />
 
-  <div class="weather-container" *ngIf="weather">
-    <div class="left-section">
-      <h2>Localidad: {{ weather.name }}</h2>
-      <div class="weather-info">
-        <h2>Detalles del Clima</h2>
-        <p><strong>Descripción:</strong> {{ weather.weather[0].description }}</p>
-        <p><strong>Humedad:</strong> {{ weather.main.humidity }}%</p>
-        <p><strong>Vel. Viento:</strong> {{ weather.wind.speed }} m/s</p>
-        <p><strong>Dirección del Viento:</strong> {{ weather.wind.deg }}°</p>
-        <p><strong>Presión Atmosférica:</strong> {{ weather.main.pressure }} hPa</p>
-        <p><strong>Sensación Térmica:</strong> {{ weather.main.feels_like }}°C</p>
-        <p><strong>Visibilidad:</strong> {{ weather.visibility / 1000 }} km</p>
-        <p><strong>Amanece:</strong> {{ convertUnixTime(weather.sys.sunrise) }}</p>
-        <p><strong>Oscurece:</strong> {{ convertUnixTime(weather.sys.sunset) }}</p>
+<div class="shell">
+  <header class="header">
+    <a class="brand" routerLink="/" [attr.aria-label]="i18n.t('app.home')">
+      <img src="favicon.svg" alt="" width="36" height="36" />
+      <span>{{ i18n.t('app.name') }}</span>
+    </a>
+
+    <app-search-bar class="search" [locating]="store.locating()" (selected)="select($event)" (locate)="locate()" />
+
+    <div class="toggles">
+      @if (installPrompt()) {
+        <button type="button" class="icon-btn install" (click)="install()" [attr.aria-label]="i18n.t('app.install')" [title]="i18n.t('app.install')">
+          <app-icon name="download" />
+        </button>
+      }
+      <div class="segmented glass" role="radiogroup" [attr.aria-label]="i18n.t('app.language')">
+        @for (o of langOptions; track o.value) {
+          <button
+            type="button"
+            role="radio"
+            [attr.lang]="o.value"
+            [attr.aria-checked]="i18n.lang() === o.value"
+            [class.on]="i18n.lang() === o.value"
+            (click)="i18n.setLang(o.value)"
+          >
+            {{ o.label }}
+          </button>
+        }
       </div>
-      
+      <div class="segmented glass" role="radiogroup" [attr.aria-label]="i18n.t('app.units')">
+        @for (o of unitOptions; track o.value) {
+          <button
+            type="button"
+            role="radio"
+            [attr.aria-checked]="prefs.units() === o.value"
+            [class.on]="prefs.units() === o.value"
+            (click)="prefs.setUnits(o.value)"
+          >
+            {{ o.label }}
+          </button>
+        }
+      </div>
     </div>
-    <div class="separator"></div>
-    <div class="right-section">
-      <p class="temperature">{{ weather.main.temp }}°C</p>
-      <img [src]="getWeatherIcon(weather.weather[0].icon)" alt="weather icon" />
-    </div>
+  </header>
+
+  <div class="notices" aria-live="polite">
+    @if (!online()) {
+      <div class="notice glass offline" role="status">
+        <app-icon name="wifiOff" />
+        <span>{{ i18n.t('app.offline') }}</span>
+      </div>
+    }
+    @if (updateReady()) {
+      <div class="notice glass update" role="status">
+        <app-icon name="download" />
+        <span>{{ i18n.t('app.update') }}</span>
+        <button type="button" class="notice-action" (click)="reload()">{{ i18n.t('app.reload') }}</button>
+      </div>
+    }
+    @if (softError(); as message) {
+      <div class="notice glass error" role="status">
+        <app-icon name="alert" />
+        <span>{{ message }}</span>
+        <button type="button" class="notice-close" (click)="store.error.set(null)" [attr.aria-label]="i18n.t('app.closeNotice')">
+          <app-icon name="close" [size]="16" />
+        </button>
+      </div>
+    }
   </div>
+
+  <main id="content" class="content" tabindex="-1" [attr.aria-busy]="store.status() === 'loading'">
+    <router-outlet />
+  </main>
+
+  <footer class="footer">
+    <span>
+      {{ i18n.t('footer.data') }} <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>,
+      {{ i18n.t('footer.radar') }} <a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a>
+    </span>
+    <span class="dot" aria-hidden="true">·</span>
+    <span>
+      {{ i18n.t('footer.madeBy') }}
+      <a href="https://github.com/HugoEseverri/weatherAngular" target="_blank" rel="noopener">Hugo Eseverri</a>
+    </span>
+  </footer>
 </div>

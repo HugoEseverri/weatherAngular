@@ -1,0 +1,92 @@
+<div class="bar glass" [class.focused]="open()">
+  <app-icon name="search" class="lead" />
+  <input
+    #field
+    type="search"
+    role="combobox"
+    autocomplete="off"
+    spellcheck="false"
+    [placeholder]="i18n.t('search.placeholder')"
+    [attr.aria-label]="i18n.t('search.label')"
+    aria-controls="search-options"
+    aria-autocomplete="list"
+    [attr.aria-expanded]="showPanel()"
+    [attr.aria-activedescendant]="activeIndex() >= 0 ? 'opt-' + activeIndex() : null"
+    [value]="query()"
+    (input)="onInput(field.value)"
+    (focus)="open.set(true)"
+    (keydown)="onKeydown($event)"
+  />
+  @if (loading()) {
+    <span class="spinner" role="status" [attr.aria-label]="i18n.t('search.loading')"></span>
+  } @else if (query()) {
+    <button type="button" class="ghost" [attr.aria-label]="i18n.t('search.clear')" (click)="clear()">
+      <app-icon name="close" [size]="18" />
+    </button>
+  } @else {
+    <kbd aria-hidden="true">/</kbd>
+  }
+  <span class="divider"></span>
+  <button
+    type="button"
+    class="locate"
+    [class.busy]="locating()"
+    [disabled]="locating()"
+    (click)="locate.emit()"
+    [attr.aria-label]="i18n.t('search.locate')"
+    [title]="i18n.t('search.locate')"
+  >
+    <app-icon name="locate" [size]="19" />
+    <span class="label">{{ i18n.t('search.locateShort') }}</span>
+  </button>
+</div>
+
+@if (showPanel()) {
+  <ul id="search-options" class="panel" role="listbox" [attr.aria-label]="i18n.t('search.cities')">
+    @for (opt of options(); track opt.place.id + opt.group; let i = $index) {
+      @if (opt.group !== 'result' && (i === 0 || options()[i - 1].group !== opt.group)) {
+        <li class="group" role="presentation">
+          <app-icon [name]="opt.group === 'favorite' ? 'star' : 'history'" [size]="13" />
+          {{ i18n.t(opt.group === 'favorite' ? 'search.favorites' : 'search.recents') }}
+        </li>
+      }
+      <li
+        [id]="'opt-' + i"
+        role="option"
+        class="option"
+        [class.active]="i === activeIndex()"
+        [attr.aria-selected]="i === activeIndex()"
+        (pointerenter)="activeIndex.set(i)"
+        (click)="choose(opt.place)"
+      >
+        <span class="flag" aria-hidden="true">
+          @if (opt.place.countryCode) {
+            <app-flag [countryCode]="opt.place.countryCode" [width]="26" />
+          } @else {
+            <app-icon name="pin" [size]="18" />
+          }
+        </span>
+        <span class="text">
+          <strong>{{ opt.place.name || i18n.t('place.myLocation') }}</strong>
+          @if (subtitle(opt.place)) {
+            <small>{{ subtitle(opt.place) }}</small>
+          }
+        </span>
+        @if (opt.group === 'favorite') {
+          <app-icon name="star" [size]="15" [filled]="true" class="fav" />
+        }
+      </li>
+    } @empty {
+      @if (loading()) {
+        @for (s of [1, 2, 3]; track s) {
+          <li class="option placeholder" role="presentation">
+            <span class="skeleton" style="width: 28px; height: 22px"></span>
+            <span class="skeleton" style="flex: 1; height: 14px"></span>
+          </li>
+        }
+      } @else {
+        <li class="empty" role="presentation">{{ i18n.t('search.empty', { q: query().trim() }) }}</li>
+      }
+    }
+  </ul>
+}

@@ -1,0 +1,60 @@
+<section class="glass card rise" aria-labelledby="daily-title">
+  <h2 id="daily-title" class="card-title">
+    <app-icon name="calendar" />
+    {{ i18n.t('daily.title', { n: days().length }) }}
+  </h2>
+
+  <ul class="days">
+    @for (d of days(); track d.date.getTime(); let i = $index) {
+      <li [class.open]="expanded() === i">
+        <button
+          type="button"
+          class="row"
+          [attr.aria-expanded]="expanded() === i"
+          [attr.aria-controls]="'day-' + i"
+          (click)="toggle(i)"
+        >
+          <span class="day" [class.today]="i === 0">{{ d.label }}</span>
+          <span class="cond" aria-hidden="true">
+            <app-weather-icon [code]="d.code" [size]="34" [animated]="false" />
+            <span class="rain" [class.visible]="d.precipitationProbability >= 20">{{ d.precipitationProbability }}%</span>
+          </span>
+          <span class="min" aria-hidden="true">{{ units.temp(d.min) }}</span>
+          <span class="track" aria-hidden="true">
+            <span class="fill" [style.left.%]="d.left" [style.width.%]="d.width" [style.background]="d.gradient">
+              @if (d.nowPos !== null) {
+                <span class="now" [style.left.%]="d.nowPos"></span>
+              }
+            </span>
+          </span>
+          <span class="max" aria-hidden="true">{{ units.temp(d.max) }}</span>
+          <span class="sr-only">{{ i18n.t('daily.summary', { cond: d.condition, min: units.temp(d.min), max: units.temp(d.max) }) }}</span>
+        </button>
+
+        @if (expanded() === i) {
+          <div class="details" [id]="'day-' + i">
+            <p class="summary">{{ d.condition }}</p>
+            <dl>
+              <div>
+                <dt><app-icon name="rain" [size]="14" /> {{ i18n.t('daily.rain') }}</dt>
+                <dd>{{ units.precipitation(d.precipitationSum) }} · {{ d.precipitationProbability }}%</dd>
+              </div>
+              <div>
+                <dt><app-icon name="wind" [size]="14" /> {{ i18n.t('daily.wind') }}</dt>
+                <dd>{{ units.speed(d.windSpeedMax) }}</dd>
+              </div>
+              <div>
+                <dt><app-icon name="sun" [size]="14" /> {{ i18n.t('daily.uv') }}</dt>
+                <dd>{{ d.uvRounded }} · {{ d.uvLabel }}</dd>
+              </div>
+              <div>
+                <dt><app-icon name="sunrise" [size]="14" /> {{ i18n.t('daily.sun') }}</dt>
+                <dd>{{ d.sunrise }} – {{ d.sunset }}</dd>
+              </div>
+            </dl>
+          </div>
+        }
+      </li>
+    }
+  </ul>
+</section>

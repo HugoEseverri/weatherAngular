@@ -1,0 +1,150 @@
+@import 'leaflet/dist/leaflet.css';
+
+app-radar-map {
+  display: block;
+}
+
+.radar-card {
+  padding: 18px 18px 14px;
+  border-radius: var(--radius-lg);
+}
+
+.radar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  .card-title {
+    margin: 0;
+  }
+}
+
+.radar-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+
+  i {
+    width: 90px;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #88ddee, #0099cc, #0077aa, #ffee00, #ffaa00, #ff4400, #c10000);
+  }
+}
+
+.radar-frame {
+  position: relative;
+  height: 380px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  isolation: isolate;
+  background: #0e1626;
+}
+
+.radar-map {
+  position: absolute;
+  inset: 0;
+  background: #0e1626;
+  font-family: var(--font-sans);
+}
+
+.radar-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+  border-radius: 0;
+}
+
+.radar-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+
+  .icon-btn {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+  }
+
+  input[type='range'] {
+    flex: 1;
+    min-width: 0;
+    accent-color: #fff;
+  }
+}
+
+.radar-time {
+  min-width: 9.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+// Marcador de la ciudad: punto con pulso
+.radar-pin span {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 4px solid #3b82f6;
+  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6);
+  animation: radar-pulse 2s infinite;
+}
+
+@keyframes radar-pulse {
+  to {
+    box-shadow: 0 0 0 18px rgba(59, 130, 246, 0);
+  }
+}
+
+// Ajustes a los controles de Leaflet para que combinen con el diseño
+.radar-map {
+  .leaflet-control-zoom {
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    overflow: hidden;
+
+    a {
+      background: rgba(15, 23, 42, 0.8);
+      color: #fff;
+      border-color: var(--glass-border);
+      &:hover {
+        background: rgba(30, 41, 59, 0.95);
+      }
+    }
+  }
+  .leaflet-control-attribution {
+    background: rgba(15, 23, 42, 0.7);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 10px;
+
+    a {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .radar-frame {
+    height: 300px;
+  }
+  .radar-time {
+    min-width: 0;
+  }
+}

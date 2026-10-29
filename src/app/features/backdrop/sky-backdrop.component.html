@@ -1,0 +1,61 @@
+@for (t of themes; track t) {
+  <div class="sky" [class]="'sky--' + t" [class.active]="theme() === t"></div>
+}
+
+<div class="layer sun-glow" [class.visible]="showSun()"></div>
+
+<div class="layer stars" [class.visible]="showStars()">
+  @for (s of stars; track $index) {
+    <span
+      [style.left.%]="s.x"
+      [style.top.%]="s.y"
+      [style.width.px]="s.size"
+      [style.height.px]="s.size"
+      [style.animation-delay.s]="s.delay"
+    ></span>
+  }
+</div>
+
+<div class="layer clouds" [class.visible]="showClouds()" [class.night]="night()">
+  @for (c of clouds; track $index) {
+    <div
+      class="cloud"
+      [style.top.%]="c.top"
+      [style.opacity]="c.opacity"
+      [style.transform]="'scale(' + c.scale + ')'"
+      [style.animation-duration.s]="c.duration"
+      [style.animation-delay.s]="c.delay"
+    ></div>
+  }
+</div>
+
+@if (showRain()) {
+  <div class="layer rain visible">
+    @for (d of drops; track $index) {
+      <i
+        [style.left.%]="d.x"
+        [style.height.px]="d.length"
+        [style.animation-delay.s]="d.delay"
+        [style.animation-duration.s]="d.duration"
+      ></i>
+    }
+  </div>
+}
+
+@if (showSnow()) {
+  <div class="layer snow visible">
+    @for (f of flakes; track $index) {
+      <i
+        [style.left.%]="f.x"
+        [style.width.px]="f.size"
+        [style.height.px]="f.size"
+        [style.animation-delay.s]="-f.delay"
+        [style.animation-duration.s]="f.duration"
+      ></i>
+    }
+  </div>
+}
+
+<div class="layer lightning" [class.visible]="showLightning()"></div>
+<div class="layer fog" [class.visible]="showFog()"></div>
+<div class="layer vignette visible"></div>

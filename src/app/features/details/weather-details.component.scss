@@ -1,0 +1,416 @@
+:host {
+  display: block;
+}
+
+// Columnas fijas por breakpoint + "dense" para que las tarjetas anchas no dejen huecos
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  gap: 16px;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  min-height: 190px;
+  padding: 18px 20px;
+  border-radius: var(--radius-md);
+
+  &.wide {
+    grid-column: span 2;
+  }
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.04}s;
+    }
+  }
+}
+
+.big {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+
+  &.sm {
+    font-size: 1.9rem;
+  }
+  .unit {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0;
+  }
+}
+
+.tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--tone, #fff);
+  color: #0f172a;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.tag-line {
+  margin: 6px 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--tone, var(--text));
+}
+
+.note {
+  margin: auto 0 0;
+  padding-top: 12px;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.foot {
+  margin: 10px 0 0;
+  color: var(--text-subtle);
+  font-size: 0.72rem;
+}
+
+// ---- Escalas con marcador ----
+.scale {
+  position: relative;
+  height: 6px;
+  margin-top: 14px;
+  border-radius: 999px;
+
+  .marker {
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid rgba(15, 23, 42, 0.55);
+    transform: translate(-50%, -50%);
+    transition: left 0.8s var(--ease-out);
+  }
+}
+
+.uv-scale {
+  background: linear-gradient(90deg, #4ade80, #facc15 30%, #fb923c 55%, #f87171 75%, #c084fc);
+}
+
+.aqi-scale {
+  margin-top: 18px;
+  background: linear-gradient(90deg, #4ade80, #a3e635 25%, #facc15 50%, #fb923c 70%, #f87171 85%, #c084fc);
+}
+
+// ---- Calidad del aire ----
+.aqi {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  .note {
+    margin: 0;
+    padding-top: 10px;
+    max-width: 30ch;
+  }
+}
+
+.pollutants {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 8px 18px;
+  margin: 0;
+
+  dt {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-subtle);
+  }
+  dd {
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+// ---- Sol ----
+.sun {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.arc {
+  width: 100%;
+  max-height: 120px;
+  overflow: visible;
+
+  .horizon {
+    stroke: rgba(255, 255, 255, 0.25);
+    stroke-width: 1;
+  }
+  .track {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.22);
+    stroke-width: 2;
+    stroke-dasharray: 3 5;
+  }
+  .done {
+    fill: none;
+    stroke: #fcd34d;
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .sun-dot {
+    fill: #ffd76a;
+    filter: drop-shadow(0 0 8px rgba(255, 210, 90, 0.9));
+  }
+}
+
+.sun-times {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    &:nth-child(2) {
+      text-align: center;
+    }
+    &:last-child {
+      text-align: right;
+    }
+  }
+  span {
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+  }
+  strong {
+    font-size: 1.05rem;
+  }
+}
+
+// ---- Viento ----
+.wind {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.compass {
+  position: relative;
+  flex-shrink: 0;
+  width: 112px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: repeating-conic-gradient(rgba(255, 255, 255, 0.28) 0 1deg, transparent 1deg 15deg);
+  mask: radial-gradient(circle, #000 0 100%);
+
+  > span {
+    position: absolute;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--text-muted);
+  }
+  .n {
+    top: 6px;
+    left: 50%;
+    translate: -50% 0;
+    color: #fca5a5;
+  }
+  .s {
+    bottom: 6px;
+    left: 50%;
+    translate: -50% 0;
+  }
+  .e {
+    right: 7px;
+    top: 50%;
+    translate: 0 -50%;
+  }
+  .o {
+    left: 7px;
+    top: 50%;
+    translate: 0 -50%;
+  }
+}
+
+.needle {
+  position: absolute;
+  inset: 0;
+  transition: transform 1s var(--ease-out);
+
+  path {
+    fill: #fff;
+  }
+  line {
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 2;
+  }
+}
+
+.hub {
+  position: absolute;
+  inset: 30%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.55);
+  line-height: 1;
+
+  strong {
+    font-size: 1.1rem;
+  }
+  small {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+  }
+}
+
+.mini {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+
+  dt {
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+  }
+  dd {
+    margin: 2px 0 0;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+}
+
+// ---- Barras ----
+.bar {
+  height: 6px;
+  margin-top: 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #7dd3fc, #38bdf8);
+    transition: width 0.8s var(--ease-out);
+  }
+  &.clouds span {
+    background: linear-gradient(90deg, #e2e8f0, #94a3b8);
+  }
+}
+
+// ---- Presión ----
+.pressure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  svg {
+    width: 110px;
+    margin-bottom: -6px;
+  }
+  .dial {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.25);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 1 5.2;
+  }
+  .hand {
+    transform-origin: 50px 48px;
+    transition: transform 1s var(--ease-out);
+
+    line {
+      stroke: #fff;
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+    circle {
+      fill: #fff;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .tile {
+    padding: 16px;
+    min-height: 170px;
+  }
+  // Con dos columnas la última tarjeta simple quedaría sola: ocupa la fila completa
+  .tile:last-child {
+    grid-column: span 2;
+  }
+  .compass {
+    width: 96px;
+  }
+}
+
+// ---- Luna ----
+.moon {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  svg {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    filter: drop-shadow(0 0 14px rgba(243, 236, 210, 0.35));
+
+    &.mirrored {
+      transform: scaleX(-1);
+    }
+  }
+  .moon-dark {
+    fill: rgba(15, 23, 42, 0.55);
+    stroke: rgba(255, 255, 255, 0.15);
+  }
+  .moon-lit {
+    fill: #f3ecd2;
+  }
+}
+
+.moon-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.moon-sub {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+
+  strong {
+    color: var(--text);
+  }
+}

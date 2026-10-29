@@ -1,0 +1,163 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.card {
+  padding: 18px 0 12px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 18px 0 22px;
+  margin-bottom: 12px;
+
+  .card-title {
+    margin: 0;
+  }
+}
+
+.tabs {
+  display: flex;
+  padding: 3px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.15);
+
+  button {
+    height: 30px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &.on {
+      background: rgba(255, 255, 255, 0.92);
+      color: #0f172a;
+    }
+  }
+}
+
+.scroller {
+  overflow-x: auto;
+  padding: 0 20px 6px;
+  mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 28px), transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 28px), transparent);
+  outline-offset: -2px;
+}
+
+.grid {
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  row-gap: 6px;
+  justify-items: center;
+}
+
+.hour {
+  grid-row: 1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+
+  &.now {
+    color: var(--text);
+    font-weight: 800;
+  }
+}
+
+.icon {
+  grid-row: 2;
+}
+
+.chart {
+  grid-row: 3;
+  grid-column: 1 / -1;
+  width: 100%;
+  overflow: visible;
+
+  .line {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.9);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+  }
+
+  circle {
+    fill: #fff;
+    &.first {
+      stroke: rgba(255, 255, 255, 0.35);
+      stroke-width: 6;
+    }
+  }
+
+  text {
+    fill: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-anchor: middle;
+  }
+
+  .baseline {
+    stroke: rgba(255, 255, 255, 0.2);
+  }
+
+  .bar {
+    fill: #7dd3fc;
+    animation: grow 0.5s var(--ease-out) both;
+    transform-box: fill-box;
+    transform-origin: bottom;
+  }
+
+  &.chart--wind .line {
+    stroke: #a7f3d0;
+  }
+  &.chart--rain text {
+    font-size: 12px;
+    fill: #e0f2fe;
+  }
+}
+
+.extra {
+  grid-row: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-height: 18px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.rain {
+  color: #e0f2fe;
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
+.wind svg {
+  fill: rgba(255, 255, 255, 0.85);
+}
+
+.unit-note {
+  margin: 4px 22px 0;
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+}
+
+@keyframes grow {
+  from {
+    transform: scaleY(0);
+  }
+}

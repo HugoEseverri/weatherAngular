@@ -4,6 +4,7 @@ import {
   isMainModule,
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
+import compression from 'compression';
 import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,7 +13,14 @@ const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 const app = express();
-const angularApp = new AngularNodeAppEngine();
+app.use(compression());
+const angularApp = new AngularNodeAppEngine({
+  // Solo se renderiza para estos dominios (protección contra SSRF):
+  // producción, previews de Vercel y desarrollo local.
+  allowedHosts: ['appclimahe.vercel.app', '*.vercel.app', 'localhost'],
+  // Vercel actúa como proxy: confiamos en estos encabezados para conocer el host y el protocolo reales.
+  trustProxyHeaders: ['x-forwarded-host', 'x-forwarded-proto'],
+});
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -36,6 +44,15 @@ app.use(
     redirect: false,
   }),
 );
+
+/**
+ * Las páginas de ciudad se renderizan con datos en vivo. Las cacheamos 10 minutos en el CDN
+ * (y servimos la versión anterior mientras se regenera) para que respondan al instante.
+ */
+app.use('/clima', (_req, res, next) => {
+  res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=600, stale-while-revalidate=3600');
+  next();
+});
 
 /**
  * Handle all other requests by rendering the Angular application.

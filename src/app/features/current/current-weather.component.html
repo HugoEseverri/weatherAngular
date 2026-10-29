@@ -1,0 +1,76 @@
+@let r = report();
+<section class="hero glass rise" aria-labelledby="place-name">
+  <header class="top">
+    <div class="place">
+      <h1 id="place-name">
+        <app-flag [countryCode]="r.place.countryCode" [width]="30" />
+        {{ placeName() }}
+      </h1>
+      @if (location()) {
+        <p class="region">{{ location() }}</p>
+      }
+    </div>
+    <div class="actions">
+      <button
+        type="button"
+        class="icon-btn"
+        [class.on]="isFavorite()"
+        [attr.aria-pressed]="isFavorite()"
+        [attr.aria-label]="i18n.t(isFavorite() ? 'current.favRemove' : 'current.favAdd')"
+        [title]="i18n.t(isFavorite() ? 'current.favRemove' : 'current.favAdd')"
+        (click)="toggleFavorite()"
+      >
+        <app-icon name="star" [filled]="isFavorite()" />
+      </button>
+      <button
+        type="button"
+        class="icon-btn"
+        [attr.aria-label]="i18n.t('current.share')"
+        [title]="i18n.t('current.share')"
+        (click)="share()"
+      >
+        <app-icon [name]="copied() ? 'check' : 'share'" />
+      </button>
+      <button
+        type="button"
+        class="icon-btn"
+        [class.spinning]="refreshing()"
+        [disabled]="refreshing()"
+        [attr.aria-label]="i18n.t('current.refresh')"
+        [title]="i18n.t('current.refresh')"
+        (click)="refresh.emit()"
+      >
+        <app-icon name="refresh" />
+      </button>
+      @if (copied()) {
+        <span class="copied" role="status">{{ i18n.t('current.copied') }}</span>
+      }
+    </div>
+  </header>
+
+  <p class="clock">
+    <app-icon name="clock" [size]="15" />
+    <span>{{ localDate() }} · {{ localTime() }}</span>
+  </p>
+
+  <div class="main">
+    <div class="reading">
+      <div class="temp" role="text" [attr.aria-label]="units.temp(r.current.temperature) + ' ' + units.tempUnit()">
+        <span class="value" aria-hidden="true">{{ units.tempValue(r.current.temperature) }}</span>
+        <span class="unit" aria-hidden="true">{{ units.tempUnit() }}</span>
+      </div>
+      <p class="condition">{{ condition() }}</p>
+      <p class="range">
+        <span>{{ i18n.t('current.max') }} <strong>{{ units.temp(today().max) }}</strong></span>
+        <span>{{ i18n.t('current.min') }} <strong>{{ units.temp(today().min) }}</strong></span>
+        <span>{{ i18n.t('current.feels') }} <strong>{{ units.temp(r.current.feelsLike) }}</strong></span>
+      </p>
+    </div>
+    <app-weather-icon class="art" [code]="r.current.code" [isDay]="r.current.isDay" [size]="190" />
+  </div>
+
+  <footer class="bottom">
+    <p class="outlook">{{ outlook() }}</p>
+    <span class="updated">{{ updatedAgo() }}</span>
+  </footer>
+</section>

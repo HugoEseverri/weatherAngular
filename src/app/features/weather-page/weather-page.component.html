@@ -1,0 +1,66 @@
+@if (report(); as r) {
+  <div class="layout" [class.dimmed]="store.status() === 'loading'">
+    <div class="primary">
+      <app-current-weather [report]="r" [refreshing]="store.status() === 'loading'" (refresh)="store.refresh()" />
+      <app-hourly-forecast [report]="r" />
+    </div>
+    <aside class="secondary">
+      <app-daily-forecast [report]="r" />
+    </aside>
+    <div class="radar">
+      @defer (on viewport) {
+        <app-radar-map [latitude]="r.place.latitude" [longitude]="r.place.longitude" [timezone]="r.timezone" />
+      } @placeholder {
+        <div class="glass radar-placeholder"></div>
+      }
+    </div>
+    <!-- Se renderizan en el servidor, pero su JS se descarga e hidrata al llegar a la pantalla -->
+    <div class="details">
+      @defer (on viewport; hydrate on viewport) {
+        <app-weather-details [report]="r" />
+      } @placeholder {
+        <div class="glass details-placeholder"></div>
+      }
+    </div>
+    <div class="compare">
+      @defer (on viewport; hydrate on viewport) {
+        <app-city-compare [current]="r.place" />
+      } @placeholder {
+        <div class="compare-placeholder"></div>
+      }
+    </div>
+  </div>
+} @else if (fatalError()) {
+  <section class="error glass" role="alert">
+    <app-icon name="alert" [size]="40" />
+    <h1>{{ i18n.t('error.title') }}</h1>
+    <p>{{ store.error() ? i18n.t(store.error()!) : '' }}</p>
+    <button type="button" class="primary-btn" (click)="retry()">
+      <app-icon name="refresh" [size]="18" /> {{ i18n.t('error.retry') }}
+    </button>
+  </section>
+} @else if (firstLoad()) {
+  <div class="layout" role="status" [attr.aria-label]="i18n.t('app.loading')">
+    <div class="primary">
+      <div class="glass sk-card sk-hero">
+        <span class="skeleton" style="width: 45%; height: 34px"></span>
+        <span class="skeleton" style="width: 30%; height: 16px"></span>
+        <span class="skeleton" style="width: 40%; height: 120px; margin-top: 18px; border-radius: 24px"></span>
+        <span class="skeleton" style="width: 55%; height: 18px"></span>
+      </div>
+      <div class="glass sk-card"><span class="skeleton" style="height: 150px"></span></div>
+    </div>
+    <aside class="secondary">
+      <div class="glass sk-card sk-fill">
+        @for (i of [1, 2, 3, 4, 5, 6, 7]; track i) {
+          <span class="skeleton" style="height: 26px"></span>
+        }
+      </div>
+    </aside>
+    <div class="details sk-grid">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="glass sk-card"><span class="skeleton" style="height: 140px"></span></div>
+      }
+    </div>
+  </div>
+}

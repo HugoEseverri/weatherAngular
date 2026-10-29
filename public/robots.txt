@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://appclimahe.vercel.app/sitemap.xml

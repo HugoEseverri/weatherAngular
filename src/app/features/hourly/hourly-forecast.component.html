@@ -1,0 +1,81 @@
+<section class="glass card rise" aria-labelledby="hourly-title">
+  <div class="head">
+    <h2 id="hourly-title" class="card-title">
+      <app-icon name="clock" />
+      {{ i18n.t('hourly.title') }}
+    </h2>
+    <div class="tabs" role="radiogroup" [attr.aria-label]="i18n.t('hourly.view')">
+      @for (v of views; track v) {
+        <button
+          type="button"
+          role="radio"
+          [attr.aria-checked]="view() === v"
+          [class.on]="view() === v"
+          (click)="view.set(v)"
+        >
+          {{ viewLabel(v) }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="scroller" tabindex="0" [attr.aria-label]="i18n.t('hourly.scroll')">
+    <div class="grid" [style.width.px]="width()" [style.grid-template-columns]="'repeat(' + hours().length + ', ' + col + 'px)'">
+      @for (h of hours(); track h.time.getTime(); let i = $index) {
+        <span class="hour" [class.now]="i === 0" [style.grid-column]="i + 1">{{ h.label }}</span>
+        <app-weather-icon
+          class="icon"
+          [style.grid-column]="i + 1"
+          [code]="h.code"
+          [isDay]="h.isDay"
+          [size]="36"
+          [animated]="false"
+        />
+        @if (view() === 'wind') {
+          <span class="extra wind" [style.grid-column]="i + 1">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" [style.transform]="'rotate(' + (h.windDirection + 180) + 'deg)'">
+              <path d="M12 3 18 19 12 15 6 19Z" />
+            </svg>
+          </span>
+        } @else {
+          <span class="extra rain" [style.grid-column]="i + 1" [class.visible]="h.precipitationProbability >= 10">
+            <app-icon name="droplet" [size]="11" [filled]="true" />
+            {{ h.precipitationProbability }}%
+          </span>
+        }
+      }
+
+      <svg
+        class="chart"
+        [class]="'chart--' + view()"
+        [attr.viewBox]="'0 0 ' + width() + ' ' + chartHeight"
+        [attr.height]="chartHeight"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="hourly-area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity="0.28" />
+            <stop offset="1" stop-color="#fff" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        @if (view() === 'rain') {
+          <line class="baseline" x1="0" [attr.y1]="chartHeight - 8" [attr.x2]="width()" [attr.y2]="chartHeight - 8" />
+          @for (p of points(); track $index) {
+            @if (p.bar > 0) {
+              <rect class="bar" [attr.x]="p.x - 12" [attr.y]="p.y" width="24" [attr.height]="p.bar" rx="5" />
+            }
+            <text [attr.x]="p.x" [attr.y]="p.y - 7">{{ p.label }}</text>
+          }
+        } @else {
+          <path class="area" [attr.d]="areaPath()" fill="url(#hourly-area)" />
+          <path class="line" [attr.d]="linePath()" />
+          @for (p of points(); track $index) {
+            <circle [attr.cx]="p.x" [attr.cy]="p.y" [attr.r]="$index === 0 ? 4.5 : 3" [class.first]="$index === 0" />
+            <text [attr.x]="p.x" [attr.y]="p.y - 10">{{ p.label }}</text>
+          }
+        }
+      </svg>
+    </div>
+  </div>
+  <p class="unit-note">{{ viewLabel(view()) }} · {{ unitLabel() }}</p>
+</section>

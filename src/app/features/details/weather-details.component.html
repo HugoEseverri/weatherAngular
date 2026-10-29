@@ -1,0 +1,166 @@
+<div class="grid">
+  <!-- Calidad del aire -->
+  <article class="glass tile wide rise" [class]="air() ? 'tone-' + air()!.tone : ''">
+    <h3 class="card-title"><app-icon name="leaf" /> {{ i18n.t('aq.title') }}</h3>
+    @if (air(); as a) {
+      <div class="aqi">
+        <div>
+          <p class="big">{{ a.aqi }} <span class="tag">{{ a.label }}</span></p>
+          <p class="note">{{ a.advice }}</p>
+        </div>
+        <dl class="pollutants">
+          @for (v of a.values; track v.name) {
+            <div><dt>{{ v.name }}</dt><dd>{{ v.value }}</dd></div>
+          }
+        </dl>
+      </div>
+      <div
+        class="scale aqi-scale"
+        role="meter"
+        [attr.aria-label]="i18n.t('aq.meter')"
+        [attr.aria-valuenow]="a.aqi"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <span class="marker" [style.left.%]="a.pos"></span>
+      </div>
+      <p class="foot">{{ i18n.t('aq.foot') }}</p>
+    } @else {
+      <p class="note">{{ i18n.t('aq.none') }}</p>
+    }
+  </article>
+
+  <!-- Sol -->
+  <article class="glass tile wide rise">
+    <h3 class="card-title"><app-icon name="sunrise" /> {{ i18n.t('sun.title') }}</h3>
+    @let s = sun();
+    <div class="sun">
+      <svg viewBox="0 0 200 110" class="arc" aria-hidden="true">
+        <line x1="8" y1="96" x2="192" y2="96" class="horizon" />
+        <path [attr.d]="arcPath" class="track" />
+        <path [attr.d]="arcPath" class="done" [attr.stroke-dasharray]="s.dash + ' ' + s.arcLength" />
+        @if (s.up) {
+          <circle [attr.cx]="s.x" [attr.cy]="s.y" r="9" class="sun-dot" />
+        }
+      </svg>
+      <div class="sun-times">
+        <div><span>{{ i18n.t('sun.sunrise') }}</span><strong>{{ s.sunrise }}</strong></div>
+        <div><span>{{ i18n.t('sun.daylight') }}</span><strong>{{ s.daylight }}</strong></div>
+        <div><span>{{ i18n.t('sun.sunset') }}</span><strong>{{ s.sunset }}</strong></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Viento -->
+  <article class="glass tile wide rise">
+    <h3 class="card-title"><app-icon name="wind" /> {{ i18n.t('wind.title') }}</h3>
+    @let w = wind();
+    <div class="wind">
+      <div class="compass" aria-hidden="true">
+        <span class="n">{{ cardinals().n }}</span><span class="e">{{ cardinals().e }}</span>
+        <span class="s">{{ cardinals().s }}</span><span class="o">{{ cardinals().w }}</span>
+        <svg viewBox="0 0 100 100" class="needle" [style.transform]="'rotate(' + w.rotation + 'deg)'">
+          <path d="M50 12 L57 34 L50 30 L43 34 Z" />
+          <line x1="50" y1="30" x2="50" y2="88" />
+        </svg>
+        <div class="hub">
+          <strong>{{ w.value }}</strong>
+          <small>{{ w.unit }}</small>
+        </div>
+      </div>
+      <dl class="mini">
+        <div><dt>{{ i18n.t('wind.direction') }}</dt><dd>{{ w.from }} · {{ c().windDirection }}°</dd></div>
+        <div><dt>{{ i18n.t('wind.gusts') }}</dt><dd>{{ w.gusts }}</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <!-- UV -->
+  <article class="glass tile rise" [class]="'tone-' + uv().tone">
+    <h3 class="card-title"><app-icon name="sun" /> {{ i18n.t('uv.title') }}</h3>
+    <p class="big">{{ uv().value }}</p>
+    <p class="tag-line">{{ uv().label }}</p>
+    <div
+      class="scale uv-scale"
+      role="meter"
+      [attr.aria-label]="i18n.t('uv.title')"
+      [attr.aria-valuenow]="uv().value"
+      aria-valuemin="0"
+      aria-valuemax="11"
+    >
+      <span class="marker" [style.left.%]="uv().pos"></span>
+    </div>
+    <p class="note">{{ uv().advice }}</p>
+  </article>
+
+  <!-- Luna -->
+  <article class="glass tile wide rise">
+    <h3 class="card-title"><app-icon name="moon" /> {{ i18n.t('moon.title') }}</h3>
+    @let m = moon();
+    <div class="moon">
+      <svg viewBox="0 0 80 80" aria-hidden="true" [class.mirrored]="m.mirrored">
+        <circle cx="40" cy="40" r="34" class="moon-dark" />
+        <path [attr.d]="m.path" class="moon-lit" />
+      </svg>
+      <div>
+        <p class="moon-name">{{ m.label }}</p>
+        <p class="moon-sub">{{ i18n.t('moon.illumination') }}: <strong>{{ m.illumination }}%</strong></p>
+      </div>
+    </div>
+    <p class="note">{{ i18n.t('moon.nextFull') }}: <strong>{{ m.nextFull }}</strong></p>
+  </article>
+
+  <!-- Sensación térmica -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="thermometer" /> {{ i18n.t('feels.title') }}</h3>
+    <p class="big">{{ feels().value }}</p>
+    <p class="note">{{ feels().note }}</p>
+  </article>
+
+  <!-- Humedad -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="droplet" /> {{ i18n.t('humidity.title') }}</h3>
+    <p class="big">{{ c().humidity }}<span class="unit">%</span></p>
+    <div class="bar" aria-hidden="true"><span [style.width.%]="c().humidity"></span></div>
+    <p class="note">{{ i18n.t('humidity.dew', { t: units.temp(c().dewPoint) }) }}</p>
+  </article>
+
+  <!-- Precipitación -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="rain" /> {{ i18n.t('rain.title') }}</h3>
+    <p class="big sm">{{ rain().today }}</p>
+    <p class="tag-line">{{ i18n.t('rain.today') }}</p>
+    <p class="note">{{ rain().note }}</p>
+  </article>
+
+  <!-- Presión -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="gauge" /> {{ i18n.t('pressure.title') }}</h3>
+    <div class="pressure">
+      <svg viewBox="0 0 100 70" aria-hidden="true">
+        <path d="M 14 62 A 40 40 0 1 1 86 62" class="dial" />
+        <g [style.transform]="'rotate(' + pressure().rotation + 'deg)'" class="hand">
+          <line x1="50" y1="48" x2="50" y2="18" />
+          <circle cx="50" cy="48" r="4" />
+        </g>
+      </svg>
+      <p class="big sm">{{ pressure().value }} <span class="unit">{{ pressure().unit }}</span></p>
+    </div>
+    <p class="note">{{ pressure().note }}</p>
+  </article>
+
+  <!-- Visibilidad -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="eye" /> {{ i18n.t('visibility.title') }}</h3>
+    <p class="big">{{ visibility().value }}<span class="unit"> {{ visibility().unit }}</span></p>
+    <p class="note">{{ visibility().note }}</p>
+  </article>
+
+  <!-- Nubosidad -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="cloud" /> {{ i18n.t('clouds.title') }}</h3>
+    <p class="big">{{ c().cloudCover }}<span class="unit">%</span></p>
+    <div class="bar clouds" aria-hidden="true"><span [style.width.%]="c().cloudCover"></span></div>
+    <p class="note">{{ clouds() }}</p>
+  </article>
+</div>

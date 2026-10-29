@@ -1,0 +1,24 @@
+{
+  "name": "Clima — Pronóstico del tiempo",
+  "short_name": "Clima",
+  "description": "Pronóstico por hora y a 10 días, radar de lluvia, índice UV y calidad del aire.",
+  "lang": "es",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "id": "/",
+  "background_color": "#0b1430",
+  "theme_color": "#1e3a8a",
+  "categories": ["weather", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshots/desktop.png", "sizes": "1440x900", "type": "image/png", "form_factor": "wide", "label": "Pronóstico en escritorio" },
+    { "src": "screenshots/mobile.png", "sizes": "1170x1992", "type": "image/png", "form_factor": "narrow", "label": "Pronóstico en el celular" }
+  ]
+}

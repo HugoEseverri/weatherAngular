@@ -1,0 +1,176 @@
+:host {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.sun {
+  circle {
+    fill: #ffc94a;
+    filter: drop-shadow(0 0 6px rgba(255, 196, 64, 0.65));
+  }
+  .rays line {
+    stroke: #ffd36b;
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  &.small .rays line {
+    stroke-width: 2.4;
+  }
+}
+
+.moon {
+  fill: #f3ecd2;
+  filter: drop-shadow(0 0 6px rgba(243, 236, 210, 0.45));
+}
+
+.star {
+  fill: #fff;
+}
+
+.cloud {
+  fill: #f4f7fc;
+  &.back {
+    fill: #c3cee0;
+  }
+  &.night {
+    fill: #c9d1e3;
+  }
+  &.storm {
+    fill: #a3adc4;
+  }
+}
+
+.drops line {
+  stroke: #6cc0ff;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.flakes circle {
+  fill: #fff;
+}
+
+.bolt {
+  fill: #ffd23f;
+  filter: drop-shadow(0 0 4px rgba(255, 210, 63, 0.8));
+}
+
+.fog line {
+  stroke: #dfe6f2;
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+// ---- Animaciones (solo cuando el ícono es "animated") ----
+:host(.animated) {
+  .rays {
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: spin 18s linear infinite;
+  }
+  .sun.small .rays {
+    transform-origin: 34.4% 31.25%;
+  }
+  .cloud.front {
+    animation: float 6s ease-in-out infinite;
+  }
+  .star {
+    animation: twinkle 2.4s ease-in-out infinite;
+    &.s2 {
+      animation-delay: 1.1s;
+    }
+  }
+  .drops line,
+  .flakes circle {
+    animation: fall 1.1s linear infinite;
+  }
+  .flakes circle {
+    animation-duration: 2.2s;
+  }
+  .d2 {
+    animation-delay: 0.35s !important;
+  }
+  .d3 {
+    animation-delay: 0.7s !important;
+  }
+  .bolt {
+    animation: flash 2.8s ease-in-out infinite;
+  }
+  .fog line {
+    animation: drift 4s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 1.5px -1px;
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes fall {
+  0% {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: -1px 6px;
+  }
+}
+
+@keyframes flash {
+  0%,
+  60%,
+  100% {
+    opacity: 1;
+  }
+  64%,
+  72% {
+    opacity: 0.2;
+  }
+  68% {
+    opacity: 1;
+  }
+}
+
+@keyframes drift {
+  to {
+    translate: -4px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host(.animated) * {
+    animation: none !important;
+  }
+}
