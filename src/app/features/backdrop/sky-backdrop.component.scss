@@ -1,0 +1,199 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #0b1430;
+}
+
+.sky,
+.layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.sky.active,
+.layer.visible {
+  opacity: 1;
+}
+
+.sky--clear-day {
+  background:
+    radial-gradient(120% 80% at 80% 0%, #7dd3fc 0%, transparent 60%),
+    linear-gradient(165deg, #2563eb 0%, #3b82f6 40%, #60a5fa 75%, #93c5fd 100%);
+}
+.sky--clear-night {
+  background:
+    radial-gradient(90% 60% at 20% 0%, #312e81 0%, transparent 70%),
+    linear-gradient(170deg, #020617 0%, #0f172a 45%, #1e1b4b 100%);
+}
+.sky--cloudy-day {
+  background:
+    radial-gradient(100% 70% at 70% 0%, #a5b4cb 0%, transparent 65%),
+    linear-gradient(170deg, #475569 0%, #64748b 50%, #94a3b8 100%);
+}
+.sky--cloudy-night {
+  background: linear-gradient(170deg, #0b1120 0%, #1e293b 55%, #334155 100%);
+}
+.sky--rain {
+  background:
+    radial-gradient(100% 60% at 50% 0%, #3f4f6b 0%, transparent 70%),
+    linear-gradient(170deg, #1e293b 0%, #273449 50%, #3b4a63 100%);
+}
+.sky--snow {
+  background:
+    radial-gradient(100% 70% at 50% 0%, #e2e8f0 0%, transparent 70%),
+    linear-gradient(170deg, #64748b 0%, #8696ad 50%, #b4c0d1 100%);
+}
+.sky--thunder {
+  background:
+    radial-gradient(90% 60% at 30% 0%, #3b2f63 0%, transparent 70%),
+    linear-gradient(170deg, #0f0c1d 0%, #1c1830 50%, #2b2745 100%);
+}
+.sky--fog {
+  background: linear-gradient(175deg, #6b7280 0%, #9ca3af 55%, #c7ccd4 100%);
+}
+
+.sun-glow {
+  background: radial-gradient(circle at 82% 8%, rgba(255, 236, 170, 0.95) 0, rgba(255, 214, 102, 0.45) 6%, transparent 32%);
+  transform-origin: 82% 8%;
+  animation: pulse 8s ease-in-out infinite;
+}
+
+.stars span {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+.cloud {
+  position: absolute;
+  left: -40%;
+  width: 420px;
+  height: 120px;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+  filter: blur(14px);
+  animation: drift linear infinite;
+}
+.clouds.night .cloud {
+  background: radial-gradient(closest-side, rgba(148, 163, 184, 0.35), rgba(148, 163, 184, 0));
+}
+
+.rain i {
+  position: absolute;
+  top: -15%;
+  width: 1.5px;
+  background: linear-gradient(to bottom, rgba(186, 220, 255, 0), rgba(186, 220, 255, 0.55));
+  transform: rotate(12deg);
+  animation: rain linear infinite;
+}
+
+.snow i {
+  position: absolute;
+  top: -5%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  filter: blur(0.5px);
+  animation: snow linear infinite;
+}
+
+.lightning {
+  background: rgba(220, 225, 255, 0.0);
+}
+.lightning.visible {
+  animation: lightning 9s infinite;
+}
+
+.fog {
+  background:
+    linear-gradient(to top, rgba(255, 255, 255, 0.55), transparent 55%),
+    repeating-linear-gradient(180deg, transparent 0 60px, rgba(255, 255, 255, 0.08) 60px 120px);
+  background-size: 100% 100%, 200% 100%;
+  animation: fog 30s linear infinite;
+}
+
+.vignette {
+  background: radial-gradient(130% 100% at 50% 0%, transparent 55%, rgba(2, 6, 23, 0.45) 100%);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes drift {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 180vw 0;
+  }
+}
+
+@keyframes rain {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: -25vh 130vh;
+  }
+}
+
+@keyframes snow {
+  0% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 30px 55vh;
+  }
+  100% {
+    translate: -10px 110vh;
+  }
+}
+
+@keyframes lightning {
+  0%,
+  88%,
+  91%,
+  94%,
+  100% {
+    background: rgba(220, 225, 255, 0);
+  }
+  89%,
+  92.5% {
+    background: rgba(220, 225, 255, 0.35);
+  }
+}
+
+@keyframes fog {
+  to {
+    background-position: 0 0, 200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+  }
+}

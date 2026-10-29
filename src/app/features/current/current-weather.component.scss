@@ -1,0 +1,168 @@
+:host {
+  display: block;
+}
+
+.hero {
+  padding: 28px 30px 22px;
+  overflow: hidden;
+
+  // Brillo sutil en la esquina para dar profundidad
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -40% -20% auto auto;
+    width: 70%;
+    aspect-ratio: 1;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.16), transparent);
+    pointer-events: none;
+  }
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+
+.region {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+
+  .on {
+    color: #facc15;
+  }
+  .spinning app-icon {
+    animation: spin 0.9s linear infinite;
+  }
+}
+
+.clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.temp {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1;
+
+  .value {
+    font-size: clamp(6rem, 15vw, 9.5rem);
+    font-weight: 300;
+    letter-spacing: -0.06em;
+    background: linear-gradient(180deg, #fff 30%, rgba(255, 255, 255, 0.7));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .unit {
+    margin-top: 0.9rem;
+    margin-left: 4px;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+}
+
+.condition {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.range {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+
+  strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+}
+
+.art {
+  margin-right: -6px;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.2));
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.outlook {
+  margin: 0;
+  font-weight: 600;
+}
+
+.updated {
+  color: var(--text-subtle);
+  font-size: 0.8rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    padding: 22px 20px 18px;
+  }
+  .art {
+    width: 120px !important;
+    height: 120px !important;
+    position: absolute;
+    right: 14px;
+    top: 120px;
+  }
+  .main {
+    margin-top: 12px;
+  }
+}

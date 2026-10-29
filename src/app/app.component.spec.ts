@@ -1,60 +1,70 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
-import { WeatherService } from './services/weather.service';
+import { provideHttpClient } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
-import { FormsModule } from '@angular/forms';
+import { AppComponent } from './app.component';
+import { mapForecast, WeatherService } from './core/services/weather.service';
+import { WeatherStore } from './core/services/weather-store.service';
+import { FORECAST, PLACE } from './testing/fixtures';
 
 describe('AppComponent', () => {
-  let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let WeatherServiceMock: any;
+  let weather: jasmine.SpyObj<WeatherService>;
+  let store: WeatherStore;
 
-  beforeEach(() => {
-    WeatherServiceMock = {
-      getWeatherByCity: jasmine.createSpy('getWeatherByCity'),
-    };
+  beforeEach(async () => {
+    localStorage.clear();
+    weather = jasmine.createSpyObj<WeatherService>('WeatherService', ['getReport']);
+    weather.getReport.and.returnValue(of(mapForecast(PLACE, FORECAST, null)));
 
-    TestBed.configureTestingModule({
-      imports: [FormsModule, AppComponent],
-      providers: [{ provide: WeatherService, useValue: WeatherServiceMock }],
+    await TestBed.configureTestingModule({
+      imports: [AppComponent],
+      providers: [provideHttpClient(), { provide: WeatherService, useValue: weather }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
-    component = fixture.componentInstance;
+    store = TestBed.inject(WeatherStore);
   });
 
-  it('debería crearse correctamente', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => localStorage.clear());
+
+  it('se crea correctamente', () => {
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('no debería llamar a getWeatherByCity() si el input está vacío', () => {
-    component.city = ' ';
-    component.getWeatherByCity();
-    expect(WeatherServiceMock.getWeatherByCity).not.toHaveBeenCalled();
+  it('muestra el clima de la ciudad cargada', () => {
+    store.load(PLACE);
+    fixture.detectChanges();
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('#place-name')?.textContent).toContain('Olavarría');
+    expect(el.querySelector('.temp .value')?.textContent?.trim()).toBe('13');
+    expect(el.querySelector('app-daily-forecast')).not.toBeNull();
   });
 
-  it('debería llamar a getWeatherByCity() cuando se ingresa una ciudad', () => {
-    const mockWeather = { temp: 22, city: 'Olavarría' };
-    WeatherServiceMock.getWeatherByCity.and.returnValue(of(mockWeather));
+  it('cambia a Fahrenheit al elegir °F', () => {
+    store.load(PLACE);
+    fixture.detectChanges();
 
-    component.city = 'Olavarría';
-    component.getWeatherByCity();
+    const el: HTMLElement = fixture.nativeElement;
+    const fahrenheit = [...el.querySelectorAll<HTMLButtonElement>('.units button')].find((b) =>
+      b.textContent?.includes('°F'),
+    )!;
+    fahrenheit.click();
+    fixture.detectChanges();
+    fixture.detectChanges();
 
-    expect(WeatherServiceMock.getWeatherByCity).toHaveBeenCalledWith('Olavarría');
-    expect(component.weather).toEqual(mockWeather);
+    expect(el.querySelector('.temp .value')?.textContent?.trim()).toBe('56');
   });
 
-  it('debería manejar errores si la API falla', (done) => {
-    WeatherServiceMock.getWeatherByCity.and.returnValue(throwError(() => new Error('Error API')));
+  it('muestra un estado de error si la API falla', () => {
+    weather.getReport.and.returnValue(throwError(() => new Error('API caída')));
+    store.load(PLACE);
+    fixture.detectChanges();
+    fixture.detectChanges();
 
-    component.city = 'Barcelona';
-
-    component.getWeatherByCity();
-
-    fixture.whenStable().then(() => {
-      expect(component.weather).toBeUndefined();
-      done();
-    });
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('.error')).not.toBeNull();
+    expect(store.report()).toBeNull();
   });
-
 });

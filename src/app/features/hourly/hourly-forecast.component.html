@@ -1,0 +1,41 @@
+<section class="glass card rise" aria-labelledby="hourly-title">
+  <h2 id="hourly-title" class="card-title">
+    <app-icon name="clock" />
+    Próximas 24 horas
+  </h2>
+
+  <div class="scroller" tabindex="0" aria-label="Pronóstico por hora, desplazable">
+    <div class="grid" [style.width.px]="width()" [style.grid-template-columns]="'repeat(' + hours().length + ', ' + col + 'px)'">
+      @for (h of hours(); track h.time.getTime(); let i = $index) {
+        <span class="hour" [class.now]="i === 0" [style.grid-column]="i + 1">{{ h.label }}</span>
+        <app-weather-icon
+          class="icon"
+          [style.grid-column]="i + 1"
+          [code]="h.code"
+          [isDay]="h.isDay"
+          [size]="36"
+          [animated]="false"
+        />
+        <span class="rain" [style.grid-column]="i + 1" [class.visible]="h.precipitationProbability >= 10">
+          <app-icon name="droplet" [size]="11" [filled]="true" />
+          {{ h.precipitationProbability }}%
+        </span>
+      }
+
+      <svg class="chart" [attr.viewBox]="'0 0 ' + width() + ' ' + chartHeight" [attr.height]="chartHeight" aria-hidden="true">
+        <defs>
+          <linearGradient id="hourly-area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity="0.28" />
+            <stop offset="1" stop-color="#fff" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <path class="area" [attr.d]="areaPath()" fill="url(#hourly-area)" />
+        <path class="line" [attr.d]="linePath()" />
+        @for (p of points(); track $index) {
+          <circle [attr.cx]="p.x" [attr.cy]="p.y" [attr.r]="$index === 0 ? 4.5 : 3" [class.first]="$index === 0" />
+          <text [attr.x]="p.x" [attr.y]="p.y - 10">{{ units.temp(p.t) }}</text>
+        }
+      </svg>
+    </div>
+  </div>
+</section>

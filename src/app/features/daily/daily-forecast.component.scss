@@ -1,0 +1,158 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+// La tarjeta ocupa todo el alto de la columna y reparte las filas
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px 14px 10px;
+
+  .card-title {
+    padding: 0 8px;
+  }
+}
+
+.days {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li + li {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 3.4rem 4.6rem 2.6rem 1fr 2.6rem;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  text-align: left;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.07);
+  }
+}
+
+.day {
+  font-weight: 700;
+
+  &.today {
+    font-weight: 800;
+  }
+}
+
+.cond {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.rain {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #e0f2fe;
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
+.min {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-align: right;
+}
+
+.max {
+  font-weight: 800;
+}
+
+.track {
+  position: relative;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: inherit;
+  transition:
+    left 0.6s var(--ease-out),
+    width 0.6s var(--ease-out);
+}
+
+.now {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(15, 23, 42, 0.5);
+  transform: translate(-50%, -50%);
+}
+
+.details {
+  margin: 0 8px 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  animation: open 0.3s var(--ease-out);
+}
+
+.summary {
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px 18px;
+  margin: 0;
+}
+
+dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+dd {
+  margin: 2px 0 0;
+  font-weight: 700;
+}
+
+@keyframes open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (max-width: 420px) {
+  .row {
+    grid-template-columns: 2.8rem 4rem 2.3rem 1fr 2.3rem;
+    gap: 6px;
+  }
+}

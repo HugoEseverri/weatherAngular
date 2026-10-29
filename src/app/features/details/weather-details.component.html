@@ -1,0 +1,143 @@
+<div class="grid">
+  <!-- Calidad del aire -->
+  <article class="glass tile wide rise" [class]="air() ? 'tone-' + air()!.level.tone : ''">
+    <h3 class="card-title"><app-icon name="leaf" /> Calidad del aire</h3>
+    @if (air(); as a) {
+      <div class="aqi">
+        <div>
+          <p class="big">{{ a.aqi }} <span class="tag">{{ a.level.label }}</span></p>
+          <p class="note">{{ a.level.advice }}</p>
+        </div>
+        <dl class="pollutants">
+          <div><dt>PM2.5</dt><dd>{{ a.pm25 | number: '1.0-1' }}</dd></div>
+          <div><dt>PM10</dt><dd>{{ a.pm10 | number: '1.0-1' }}</dd></div>
+          <div><dt>O₃</dt><dd>{{ a.ozone | number: '1.0-0' }}</dd></div>
+          <div><dt>NO₂</dt><dd>{{ a.nitrogenDioxide | number: '1.0-1' }}</dd></div>
+        </dl>
+      </div>
+      <div class="scale aqi-scale" role="meter" aria-label="Índice europeo de calidad del aire" [attr.aria-valuenow]="a.aqi" aria-valuemin="0" aria-valuemax="100">
+        <span class="marker" [style.left.%]="a.pos"></span>
+      </div>
+      <p class="foot">Índice europeo (EAQI) · contaminantes en µg/m³</p>
+    } @else {
+      <p class="note">Sin datos de calidad del aire para esta ubicación.</p>
+    }
+  </article>
+
+  <!-- Sol -->
+  <article class="glass tile wide rise">
+    <h3 class="card-title"><app-icon name="sunrise" /> Sol</h3>
+    @let s = sun();
+    <div class="sun">
+      <svg viewBox="0 0 200 110" class="arc" aria-hidden="true">
+        <line x1="8" y1="96" x2="192" y2="96" class="horizon" />
+        <path [attr.d]="arcPath" class="track" />
+        <path [attr.d]="arcPath" class="done" [attr.stroke-dasharray]="s.dash + ' ' + s.arcLength" />
+        @if (s.up) {
+          <circle [attr.cx]="s.x" [attr.cy]="s.y" r="9" class="sun-dot" />
+        }
+      </svg>
+      <div class="sun-times">
+        <div><span>Amanecer</span><strong>{{ s.sunrise }}</strong></div>
+        <div><span>Luz diurna</span><strong>{{ s.daylight }}</strong></div>
+        <div><span>Atardecer</span><strong>{{ s.sunset }}</strong></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Viento -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="wind" /> Viento</h3>
+    @let w = wind();
+    <div class="wind">
+      <div class="compass" aria-hidden="true">
+        <span class="n">N</span><span class="e">E</span><span class="s">S</span><span class="o">O</span>
+        <svg viewBox="0 0 100 100" class="needle" [style.transform]="'rotate(' + w.rotation + 'deg)'">
+          <path d="M50 12 L57 34 L50 30 L43 34 Z" />
+          <line x1="50" y1="30" x2="50" y2="88" />
+        </svg>
+        <div class="hub">
+          <strong>{{ w.value }}</strong>
+          <small>{{ w.unit }}</small>
+        </div>
+      </div>
+      <dl class="mini">
+        <div><dt>Dirección</dt><dd>{{ w.from }} · {{ c().windDirection }}°</dd></div>
+        <div><dt>Ráfagas</dt><dd>{{ w.gusts }}</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <!-- UV -->
+  <article class="glass tile rise" [class]="'tone-' + uv().level.tone">
+    <h3 class="card-title"><app-icon name="sun" /> Índice UV</h3>
+    <p class="big">{{ uv().value }}</p>
+    <p class="tag-line">{{ uv().level.label }}</p>
+    <div class="scale uv-scale" role="meter" aria-label="Índice UV" [attr.aria-valuenow]="uv().value" aria-valuemin="0" aria-valuemax="11">
+      <span class="marker" [style.left.%]="uv().pos"></span>
+    </div>
+    <p class="note">{{ uv().advice }}</p>
+  </article>
+
+  <!-- Sensación térmica -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="thermometer" /> Sensación</h3>
+    <p class="big">{{ feels().value }}</p>
+    <p class="note grow">{{ feels().note }}</p>
+  </article>
+
+  <!-- Humedad -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="droplet" /> Humedad</h3>
+    <p class="big">{{ c().humidity }}<span class="unit">%</span></p>
+    <div class="bar" aria-hidden="true"><span [style.width.%]="c().humidity"></span></div>
+    <p class="note">Punto de rocío de {{ units.temp(c().dewPoint) }}.</p>
+  </article>
+
+  <!-- Precipitación -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="rain" /> Precipitación</h3>
+    <p class="big sm">{{ rain().today }}</p>
+    <p class="tag-line">Previstas hoy</p>
+    <p class="note">
+      @if (rain().peak >= 10) {
+        Máxima probabilidad: {{ rain().peak }}% a las {{ rain().peakAt }} h.
+      } @else {
+        Sin lluvias significativas en 24 h.
+      }
+    </p>
+  </article>
+
+  <!-- Presión -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="gauge" /> Presión</h3>
+    <div class="pressure">
+      <svg viewBox="0 0 100 70" aria-hidden="true">
+        <path d="M 14 62 A 40 40 0 1 1 86 62" class="dial" />
+        <g [style.transform]="'rotate(' + pressure().rotation + 'deg)'" class="hand">
+          <line x1="50" y1="48" x2="50" y2="18" />
+          <circle cx="50" cy="48" r="4" />
+        </g>
+      </svg>
+      <p class="big sm">{{ pressure().value }} <span class="unit">{{ pressure().unit }}</span></p>
+    </div>
+    <p class="note">{{ pressure().note }}</p>
+  </article>
+
+  <!-- Visibilidad -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="eye" /> Visibilidad</h3>
+    <p class="big">{{ visibility().value }}<span class="unit"> {{ visibility().unit }}</span></p>
+    <p class="note grow">{{ visibility().note }}</p>
+  </article>
+
+  <!-- Nubosidad -->
+  <article class="glass tile rise">
+    <h3 class="card-title"><app-icon name="cloud" /> Nubosidad</h3>
+    <p class="big">{{ c().cloudCover }}<span class="unit">%</span></p>
+    <div class="bar clouds" aria-hidden="true"><span [style.width.%]="c().cloudCover"></span></div>
+    <p class="note">
+      {{ c().cloudCover < 20 ? 'Cielo mayormente despejado.' : c().cloudCover < 70 ? 'Nubosidad parcial.' : 'Cielo cubierto.' }}
+    </p>
+  </article>
+</div>

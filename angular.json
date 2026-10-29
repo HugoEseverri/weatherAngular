@@ -13,7 +13,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "allowedCommonJsDependencies": ["dotenv"],
             "outputPath": "dist/weather-app",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -28,30 +27,19 @@
               }
             ],
             "styles": [
-              "@angular/material/prebuilt-themes/azure-blue.css",
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": [],
             "server": "src/main.server.ts",
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "inlineStyleLanguage": "scss"
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environments.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "define": {
-                "API_KEY": "\"b6b082c9f2e8cceb7e7d464cb42e27b6\""
-              },
               "budgets": [
-                
-                
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
@@ -59,8 +47,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "8kB",
+                  "maximumError": "16kB"
                 }
               ],
               "outputHashing": "all"
@@ -68,10 +56,7 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true,
-              "define": {
-                "API_KEY": "b6b082c9f2e8cceb7e7d464cb42e27b6"
-              }
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -106,10 +91,10 @@
               }
             ],
             "styles": [
-              "@angular/material/prebuilt-themes/azure-blue.css",
-              "src/styles.css"
+              "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "inlineStyleLanguage": "scss"
           }
         }
       }

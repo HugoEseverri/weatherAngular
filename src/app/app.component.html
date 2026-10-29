@@ -1,32 +1,104 @@
-<div class="container">
-  <h1>App Clima</h1>
+<app-sky-backdrop [theme]="store.theme()" />
 
-  <div class="search-box">
-    <input type="text" placeholder="Escribir Ciudad" [(ngModel)]="city" />
-    <button (click)="getWeatherByCity()">Obtener Clima</button>
-  </div>
+<div class="shell">
+  <header class="header">
+    <a class="brand" href="/" aria-label="Clima, inicio">
+      <img src="favicon.svg" alt="" width="36" height="36" />
+      <span>Clima</span>
+    </a>
 
-  <div class="weather-container" *ngIf="weather">
-    <div class="left-section">
-      <h2>Localidad: {{ weather.name }}</h2>
-      <div class="weather-info">
-        <h2>Detalles del Clima</h2>
-        <p><strong>Descripción:</strong> {{ weather.weather[0].description }}</p>
-        <p><strong>Humedad:</strong> {{ weather.main.humidity }}%</p>
-        <p><strong>Vel. Viento:</strong> {{ weather.wind.speed }} m/s</p>
-        <p><strong>Dirección del Viento:</strong> {{ weather.wind.deg }}°</p>
-        <p><strong>Presión Atmosférica:</strong> {{ weather.main.pressure }} hPa</p>
-        <p><strong>Sensación Térmica:</strong> {{ weather.main.feels_like }}°C</p>
-        <p><strong>Visibilidad:</strong> {{ weather.visibility / 1000 }} km</p>
-        <p><strong>Amanece:</strong> {{ convertUnixTime(weather.sys.sunrise) }}</p>
-        <p><strong>Oscurece:</strong> {{ convertUnixTime(weather.sys.sunset) }}</p>
+    <app-search-bar
+      class="search"
+      [locating]="store.locating()"
+      (selected)="select($event)"
+      (locate)="store.locate()"
+    />
+
+    <div class="units glass" role="radiogroup" aria-label="Unidades">
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="prefs.units() === 'metric'"
+        [class.on]="prefs.units() === 'metric'"
+        (click)="prefs.setUnits('metric')"
+      >
+        °C
+      </button>
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="prefs.units() === 'imperial'"
+        [class.on]="prefs.units() === 'imperial'"
+        (click)="prefs.setUnits('imperial')"
+      >
+        °F
+      </button>
+    </div>
+  </header>
+
+  @if (softError(); as message) {
+    <div class="toast glass" role="status">
+      <app-icon name="alert" />
+      <span>{{ message }}</span>
+      <button type="button" class="link" (click)="store.error.set(null)" aria-label="Cerrar aviso">
+        <app-icon name="close" [size]="16" />
+      </button>
+    </div>
+  }
+
+  <main class="content" [attr.aria-busy]="store.status() === 'loading'">
+    @if (report(); as r) {
+      <div class="layout" [class.dimmed]="store.status() === 'loading'">
+        <div class="primary">
+          <app-current-weather [report]="r" [refreshing]="store.status() === 'loading'" (refresh)="store.refresh()" />
+          <app-hourly-forecast [report]="r" />
+        </div>
+        <aside class="secondary">
+          <app-daily-forecast [report]="r" />
+        </aside>
+        <app-weather-details class="details" [report]="r" />
       </div>
-      
-    </div>
-    <div class="separator"></div>
-    <div class="right-section">
-      <p class="temperature">{{ weather.main.temp }}°C</p>
-      <img [src]="getWeatherIcon(weather.weather[0].icon)" alt="weather icon" />
-    </div>
-  </div>
+    } @else if (fatalError()) {
+      <section class="error glass" role="alert">
+        <app-icon name="alert" [size]="40" />
+        <h1>Algo salió mal</h1>
+        <p>{{ store.error() }}</p>
+        <button type="button" class="primary-btn" (click)="retry()">
+          <app-icon name="refresh" [size]="18" /> Reintentar
+        </button>
+      </section>
+    } @else if (firstLoad()) {
+      <div class="layout" aria-label="Cargando pronóstico">
+        <div class="primary">
+          <div class="glass sk-card sk-hero">
+            <span class="skeleton" style="width: 45%; height: 34px"></span>
+            <span class="skeleton" style="width: 30%; height: 16px"></span>
+            <span class="skeleton" style="width: 40%; height: 120px; margin-top: 18px; border-radius: 24px"></span>
+            <span class="skeleton" style="width: 55%; height: 18px"></span>
+          </div>
+          <div class="glass sk-card"><span class="skeleton" style="height: 150px"></span></div>
+        </div>
+        <aside class="secondary">
+          <div class="glass sk-card">
+            @for (i of [1, 2, 3, 4, 5, 6, 7]; track i) {
+              <span class="skeleton" style="height: 26px"></span>
+            }
+          </div>
+        </aside>
+        <div class="details sk-grid">
+          @for (i of [1, 2, 3, 4]; track i) {
+            <div class="glass sk-card"><span class="skeleton" style="height: 140px"></span></div>
+          }
+        </div>
+      </div>
+    }
+  </main>
+
+  <footer class="footer">
+    <span>Datos meteorológicos de <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></span>
+    <span class="dot" aria-hidden="true">·</span>
+    <span>Hecho con Angular por
+      <a href="https://github.com/HugoEseverri/weatherAngular" target="_blank" rel="noopener">Hugo Eseverri</a>
+    </span>
+  </footer>
 </div>

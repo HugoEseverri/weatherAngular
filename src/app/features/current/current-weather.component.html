@@ -1,0 +1,64 @@
+@let r = report();
+<section class="hero glass rise" aria-labelledby="place-name">
+  <header class="top">
+    <div class="place">
+      <h1 id="place-name">
+        <app-flag [countryCode]="r.place.countryCode" [width]="30" />
+        {{ r.place.name }}
+      </h1>
+      @if (location()) {
+        <p class="region">{{ location() }}</p>
+      }
+    </div>
+    <div class="actions">
+      <button
+        type="button"
+        class="icon-btn"
+        [class.on]="isFavorite()"
+        [attr.aria-pressed]="isFavorite()"
+        [attr.aria-label]="isFavorite() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+        [title]="isFavorite() ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+        (click)="toggleFavorite()"
+      >
+        <app-icon name="star" [filled]="isFavorite()" />
+      </button>
+      <button
+        type="button"
+        class="icon-btn"
+        [class.spinning]="refreshing()"
+        [disabled]="refreshing()"
+        aria-label="Actualizar"
+        title="Actualizar"
+        (click)="refresh.emit()"
+      >
+        <app-icon name="refresh" />
+      </button>
+    </div>
+  </header>
+
+  <p class="clock">
+    <app-icon name="clock" [size]="15" />
+    <span>{{ localDate() }} · {{ localTime() }} h</span>
+  </p>
+
+  <div class="main">
+    <div class="reading">
+      <div class="temp" [attr.aria-label]="units.temp(r.current.temperature) + ' ' + units.tempUnit()">
+        <span class="value">{{ units.tempValue(r.current.temperature) }}</span>
+        <span class="unit">{{ units.tempUnit() }}</span>
+      </div>
+      <p class="condition">{{ condition() }}</p>
+      <p class="range">
+        <span>Máx. <strong>{{ units.temp(today().max) }}</strong></span>
+        <span>Mín. <strong>{{ units.temp(today().min) }}</strong></span>
+        <span>Sensación <strong>{{ units.temp(r.current.feelsLike) }}</strong></span>
+      </p>
+    </div>
+    <app-weather-icon class="art" [code]="r.current.code" [isDay]="r.current.isDay" [size]="190" />
+  </div>
+
+  <footer class="bottom">
+    <p class="outlook">{{ outlook() }}</p>
+    <span class="updated">{{ updatedAgo() }}</span>
+  </footer>
+</section>
